@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-private class StudySet {
+public final class StudySet {
   private ArrayList<Card> Cards;
   private Long id;
   private String email;

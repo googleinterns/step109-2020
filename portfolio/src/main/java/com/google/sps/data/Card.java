@@ -1,4 +1,4 @@
-private class Card{
+public final class Card{
   private String front;
   private String back;
 
