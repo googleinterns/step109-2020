@@ -1,14 +1,16 @@
 If the user is not logged in: user can go about the study_set endpoints, but homepage has no endpoints. 
 
 
-The first time the user clicks the “Sign In” button in our homepage , we go through the Google Sign-On process, and redirect the user to the page where they enter university, username (NON_MVP-->and can optionally make their bio).  This info will be sent to this endpoint (/users/) to create an entry in the Users Info entity.
+##The first time the user clicks the “Sign In” button in our homepage , we go through the Google Sign-On process, and redirect the user to the page where they enter university, username (NON_MVP-->and can optionally make their bio).  This info will be sent to this endpoint (/users/) to create an entry in the Users Info entity.
+
 /users/ → POST request (body attr: username, university, bio) → NON-MVP-->bio can be initialized as null.
 `{
 	status_code: #,
 }`
 
 
-But if the user is automatically logged in(you can get the id → and like save it in the JS file) and , you redirect them to the dashboard html page and to populate that page we use this endpoint (/users/#id).
+##But if the user is automatically logged in(you can get the id → and like save it in the JS file) and , you redirect them to the dashboard html page and to populate that page we use this endpoint (/users/#id).
+
 Dashboard.html calls -->/users/id#
 /users and /users/“id” modeled after  https://api.github.com/users/“username” → GET request
 `{
