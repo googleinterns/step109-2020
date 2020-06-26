@@ -1,10 +1,16 @@
 public final class Card{
+  private Long id;
   private String front;
   private String back;
 
-  public Card(String infront, String inback){
+  public Card(Long id, String infront, String inback){
+    this.id = id;
     this.front = infront;
     this.back = inback;
+  }
+
+  public Long getID(){
+    return this.id;
   }
 
   public String getFront(){
