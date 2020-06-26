@@ -5,9 +5,11 @@ If the user is not logged in: user can go about the study_set endpoints, but hom
 
 /users/ → POST request (body attr: username, university, bio) → NON-MVP-->bio can be initialized as null.
 
-`{
+```
+{
 	status_code: #,
-}`
+}
+```
 
 
 ## But if the user is automatically logged in(you can get the id → and like save it in the JS file) and , you redirect them to the dashboard html page and to populate that page we use this endpoint (/users/#id).
@@ -15,7 +17,8 @@ If the user is not logged in: user can go about the study_set endpoints, but hom
 Dashboard.html calls -->/users/id#
 /users and /users/“id” modeled after  https://api.github.com/users/“username” → GET request
 
-`{
+```
+{
 	id : #,
 email: “ ”,
 name: “ ”,
@@ -25,20 +28,24 @@ study_sets_url: [ “ ” ],
 bio: “ ”;
 verified_status: bool,
 profile_url: “ ”
-}`
+}
+```
 
 ## Creating Study Set which is a post request
 
 /study_set → POST request (body param: Collection(of cards front/back), title, description, and subject)
 
-`{
+```
+{
           Status_code: # (tells if the request was successful)
-}`
+}
+```
 
 ## Finding  Study Sets --doGet
 /study_sets?search_term={userinput}
 
-`[	
+```
+[	
 	id:#;
 	title: “”;
 	set_description: “ “;
@@ -58,11 +65,13 @@ profile_url: “ ”
 				}
 			],
 
-  ]`
+  ]
+  ```
 
 ## View  Study Set
 /study_sets/#id → GET request.
-`{
+```
+{
 	id: #,
 	title: “ ”,
 	user_author: “ ”,(Author of study set)
@@ -85,14 +94,15 @@ profile_url: “ ”
 					‘back’: back_text_2
 				}
 		]
-}`
+}
+```
 
 
 ### Non MVP UPDATING CARDS 
 
-`
+```
 	rating: “ ”,
 	amount_of_people_rated : #,
 	favorite_number: #
-`
+```
 
