@@ -88,10 +88,9 @@ profile_url: “ ”
 }`
 
 
-###Non MVP UPDATING CARDS 
+### Non MVP UPDATING CARDS 
 
 `
-	NON-MVP:
 	rating: “ ”,
 	amount_of_people_rated : #,
 	favorite_number: #
