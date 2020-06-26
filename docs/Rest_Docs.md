@@ -1,4 +1,4 @@
-If the user is not logged in: user can go about the study_set endpoints, but homepage has no endpoints. 
+## If the user is not logged in: user can go about the study_set endpoints, but homepage has no endpoints. 
 
 
 ## The first time the user clicks the “Sign In” button in our homepage , we go through the Google Sign-On process, and redirect the user to the page where they enter university, username (NON_MVP-->and can optionally make their bio).  This info will be sent to this endpoint (/users/) to create an entry in the Users Info entity.
