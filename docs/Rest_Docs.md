@@ -63,7 +63,7 @@ Dashboard.html calls -->/users/id#
 					‘front’: text_2, w
 					‘back’: back_text_2
 				}
-			],
+		]
 
   ]
   ```
