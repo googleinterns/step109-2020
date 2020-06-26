@@ -1,7 +1,8 @@
 import java.util.ArrayList;
+import java.util.Collection;
 
 public final class StudySet {
-  private ArrayList<Card> Cards;
+  private Collection<Card> Cards;
   private Long id;
   private String email;
   private String title;
@@ -15,7 +16,7 @@ public final class StudySet {
   private Long creationTime;
 
   public StudySet(
-    ArrayList<Card> Cards,
+    Collection<Card> Cards,
     Long id,
     String email,
     String title,
@@ -50,8 +51,8 @@ public final class StudySet {
     this.Cards.add(newCard);
   }
 
-  public void addCard(String front, String back) {
-    Card newCard = new Card(front, back);
+  public void addCard(Long cardID, String front, String back) {
+    Card newCard = new Card(cardID,front, back);
     this.Cards.add(newCard);
   }
 }
