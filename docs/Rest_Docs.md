@@ -20,14 +20,14 @@ Dashboard.html calls -->/users/id#
 ```
 {
 	id : #,
-email: “ ”,
-name: “ ”,
-username: “ ”,
-university: “ ”,
-study_sets_url: [ “ ” ],
-bio: “ ”;
-verified_status: bool,
-profile_url: “ ”
+	email: “ ”,
+	name: “ ”,
+	username: “ ”,
+	university: “ ”,
+	study_sets_url: [ “ ” ],
+	bio: “ ”;
+	verified_status: bool,
+	profile_url: “ ”
 }
 ```
 
@@ -76,7 +76,7 @@ profile_url: “ ”
 	title: “ ”,
 	user_author: “ ”,(Author of study set)
 	university: “ ”,
-            description: “”,
+	description: “”,
 	subject: “ ”,
 	period_of_upload: “Quarter/Semester/Trimester”,
 	course_name: “ ”,
