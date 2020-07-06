@@ -5,17 +5,89 @@
     <title>Studentia-Homepage</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
+     <script type = "text/javascript"  
+         src = "https://code.jquery.com/jquery-2.1.1.min.js"></script>             
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js">  
+    </script>   
     <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!--Import materialize.css-->
     <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="css/materialize.css"  media="screen,projection"/>
 
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   </head>
   <body>
-     <h3>Hompage</h3>
+
+    <nav>
+      <div class="nav-wrapper">
+        <a href="#" class="brand-logo">Studentia</a>
+          <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="findStudySet.html">Search</a></li>
+         </ul>
+      </div>
+    </nav>
+
+    <section class="introduction">      
+     <div class="row"> 
+        <div class="col l4 m4 s12 push-l1">
+          <h1 class="white-text text-darken-4">Studentia</h1>
+          <sub class="flow-text"> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pharetra feugiat vehicula. Morbi vitae varius felis.
+                Ut quis interdum dui. Sed pulvinar eros non dictum molestie. Mauris ex arcu, dictum at justo ut, gravida maximus nibh.
+                Proin id mollis magna
+          </sub>
+        </div>
+        <div class="col l8 m8 s12 push-l1">
+           <h3>This will be a slideshow walkthrough</h3>
+        </div>
+      </div>
+    </section> 
+   
+    <section class="tab-description">
+      <div class="row">
+        <div class="col s12 m12 l12">
+          <ul class="tabs">
+            <li class="tab col s4"><a href="#termsOfUsage">Terms of Usage</a></li>
+            <li class="tab col s4"><a href="#About" >About</a></li>
+            <li class="tab col s4"><a href="#getStarted">Get Started</a></li>
+          </ul>
+          <div class="col s12 tb" id="termsOfUsage">
+            <h3 class="white-text text-darken-4">Terms Of Usage</h3>
+            <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pharetra feugiat vehicula. Morbi vitae varius felis.
+                Ut quis interdum dui. Sed pulvinar eros non dictum molestie. Mauris ex arcu, dictum at justo ut, gravida maximus nibh.
+                Proin id mollis magna. Donec ultricies finibus ante, at vestibulum elit volutpat vel. Fusce felis arcu, malesuada finibus 
+                convallis a, vulputate ac tellus. Quisque diam nulla, scelerisque eu mauris ut, vehicula ornare diam.
+            </p>
+          </div>
+           <div class="col s12 tb" id="About">
+            <h3 class="white-text text-darken-4">About</h3>
+            <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pharetra feugiat vehicula. Morbi vitae varius felis.
+                Ut quis interdum dui. Sed pulvinar eros non dictum molestie. Mauris ex arcu, dictum at justo ut, gravida maximus nibh.
+                Proin id mollis magna. Donec ultricies finibus ante, at vestibulum elit volutpat vel. Fusce felis arcu, malesuada finibus 
+                convallis a, vulputate ac tellus. Quisque diam nulla, scelerisque eu mauris ut, vehicula ornare diam.
+            </p>
+          </div>
+           <div class="col s12 tb" id="getStarted">
+            <h3 class=" white-text text-darken-4">Get Started</h3>
+            <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pharetra feugiat vehicula. Morbi vitae varius felis.
+                Ut quis interdum dui. Sed pulvinar eros non dictum molestie. Mauris ex arcu, dictum at justo ut, gravida maximus nibh.
+                Proin id mollis magna. Donec ultricies finibus ante, at vestibulum elit volutpat vel. Fusce felis arcu, malesuada finibus 
+                convallis a, vulputate ac tellus. Quisque diam nulla, scelerisque eu mauris ut, vehicula ornare diam.</p>
+          </div>
+        </div>   
+      </div>   
+    </section>   
+
+    
+    
+    <footer class="page-footer">
+       <div class"container">
+           © 2020 Studentia inc
+       </div>
+    </footer>
      <!--JavaScript at end of body for optimized loading-->
      <script type="text/javascript" src="js/materialize.min.js"></script>
+     <script type="text/javascript" src="js/materialize.js"></script>
   </body>
 </html>
