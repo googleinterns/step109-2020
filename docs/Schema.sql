@@ -26,7 +26,6 @@ CREATE TABLE user_info(
    email TEXT,
    verified BOOLEAN,
    university_id INT REFERENCES university(id),
-   study_set_id INT [],
    PRIMARY KEY (id)
  );
 
