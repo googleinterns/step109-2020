@@ -9,12 +9,12 @@ div.col.s12.tb {
 }
 
 ul.tabs .indicator {
-  background-color:#02666f;
+  background-color: #02666f;
 }
 
 ul.tabs .tab.col.s4 a.active {
-  background-color:#fce181;
-  color:#1c1709;
+  background-color: #fce181;
+  color: #1c1709;
 }
 
 ul.tabs .tab.col.s4 a:focus.active {
@@ -26,13 +26,13 @@ li.tab.col.s4 {
   background-color: #edeae5;
 }
 
-li.tab.col.s4 a{
-    color: #026670;
+li.tab.col.s4 a {
+  color: #026670;
 }
 
-li.tab.col.s4 a:hover{
-  color:black;
-  background:#fce181;
+li.tab.col.s4 a:hover {
+  color: black;
+  background: #fce181;
 }
 
 nav.nav-wrapper {
