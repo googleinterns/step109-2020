@@ -82,7 +82,6 @@ public class ConnectionPoolContextListener implements ServletContextListener {
   }
 
   private void createUniversityTable(DataSource pool) throws SQLException {
-    // Safely attempts to create the university table schema.
     try (Connection conn = pool.getConnection()) {
       try (
         PreparedStatement createTableStatement = conn.prepareStatement(
@@ -95,7 +94,6 @@ public class ConnectionPoolContextListener implements ServletContextListener {
   }
 
   private void createUserInfoTable(DataSource pool) throws SQLException {
-    // Safely attempts to create the user info table schema.
     try (Connection conn = pool.getConnection()) {
       try (
         PreparedStatement createTableStatement = conn.prepareStatement(
@@ -108,7 +106,6 @@ public class ConnectionPoolContextListener implements ServletContextListener {
   }
 
   private void createStudySetTable(DataSource pool) throws SQLException {
-    // Safely attempts to create the study set table schema.
     try (Connection conn = pool.getConnection()) {
       try (
         PreparedStatement createTableStatement = conn.prepareStatement(
@@ -121,7 +118,6 @@ public class ConnectionPoolContextListener implements ServletContextListener {
   }
 
   private void createCardTable(DataSource pool) throws SQLException {
-    // Safely attempts to create the card table schema.
     try (Connection conn = pool.getConnection()) {
       try (
         PreparedStatement createTableStatement = conn.prepareStatement(
@@ -154,8 +150,7 @@ public class ConnectionPoolContextListener implements ServletContextListener {
       pool = createConnectionPool();
       servletContext.setAttribute("my-pool", pool);
     }
-    //After the connection pool has been set up, we try to create our tables in the database.
-    //First, university table:
+
     try {
       createUniversityTable(pool);
     } catch (SQLException ex) {
@@ -166,7 +161,6 @@ public class ConnectionPoolContextListener implements ServletContextListener {
       );
     }
 
-    //Next, user_info table:
     try {
       createUserInfoTable(pool);
     } catch (SQLException ex) {
@@ -177,7 +171,6 @@ public class ConnectionPoolContextListener implements ServletContextListener {
       );
     }
 
-    //Next, study_set table:
     try {
       createStudySetTable(pool);
     } catch (SQLException ex) {
@@ -188,7 +181,6 @@ public class ConnectionPoolContextListener implements ServletContextListener {
       );
     }
 
-    //Finally, the card table:
     try {
       createCardTable(pool);
     } catch (SQLException ex) {
