@@ -7,17 +7,41 @@ div.col.s12.tb {
   color: white;
   background-color: #026670;
 }
+
+ul.tabs .indicator {
+  background-color:#02666f;
+}
+
+ul.tabs .tab.col.s4 a.active {
+  background-color:#fce181;
+  color:#1c1709;
+}
+
+ul.tabs .tab.col.s4 a:focus.active {
+  color: black;
+  background-color: rgb(252, 225, 129);
+}
+
 li.tab.col.s4 {
   background-color: #edeae5;
 }
 
-div.nav-wrapper {
+li.tab.col.s4 a{
+    color: #026670;
+}
+
+li.tab.col.s4 a:hover{
+  color:black;
+  background:#fce181;
+}
+
+nav.nav-wrapper {
   background-color: #026670;
   color: silver;
 }
 footer.page-footer {
   background-color: #026670;
-  color: silver;
+  color: white;
   line-height: 50px;
   padding: 0 20px;
 }
