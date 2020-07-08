@@ -47,7 +47,8 @@ public class StudySetServlet extends HttpServlet {
             try (
                 PreparedStatement queryStatement = conn.prepareStatement(
                 "SELECT study_set.id, study_set.title, study_set.description, study_set.subject,  university.name, user_info.user_name FROM study_set " + 
-                "JOIN university ON university.id = study_set.university_id JOIN user_info ON study_set.owner_id = user_info.id"
+                "JOIN university ON university.id = study_set.university_id JOIN user_info ON study_set.owner_id = user_info.id " +
+                "ORDER BY study_set.update_time DESC LIMIT 10"
                 )
             ) {
                 // queryStatement.setString(1, search_word);
@@ -90,7 +91,8 @@ public class StudySetServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        String search_word = "";//request.getParameter("search_word");
+        String search_word = "";
+        //request.getParameter("search_word");
         String sqlStatement = "";// you can place your sql statements here.
 
         ServletContext servletContext = getServletContext();
