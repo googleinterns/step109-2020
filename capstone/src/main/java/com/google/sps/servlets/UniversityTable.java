@@ -49,8 +49,9 @@ public class UniversityTable
     }
 
     try (Connection conn = pool.getConnection()) {
-      String path =
-        "/home/kwameoab/step109-2020/capstone/src/main/java/com/google/sps/csv/Mock_University_Table.csv";
+      String path = System.getProperty("user.dir");
+      path += "/../../src/main/java/com/google/sps/csv/Mock_University_Table.csv";
+
       if (!isValidPath(path)) {
         System.out.println("Not Valid Path!");
         return;
@@ -58,10 +59,6 @@ public class UniversityTable
 
       File data = new File(path);
       Scanner dataScan = new Scanner(data);
-
-      if (dataScan.hasNext()) { // get rid of the first line
-        dataScan.nextLine();
-      }
 
       populateTable(conn, dataScan);
     }
@@ -85,13 +82,10 @@ public class UniversityTable
       if (!curLine.contains(",")) {
         System.out.println("Line does not have comma");
       } else {
-        String University = curLine.substring(0, curLine.lastIndexOf(","));
-        String State = curLine.substring(curLine.lastIndexOf(",") + 1);
-        String stmt = "INSERT INTO UNIVERSITY (name, state) Values('";
-        stmt += University;
-        stmt += "', '";
-        stmt += State;
-        stmt += "');";
+        String[] arrayResponse = curLine.split(",", 2);
+        String University = arrayResponse[0];
+        String State = arrayResponse[1];
+        String stmt = String.format("INSERT INTO UNIVERSITY (name, state) Values('%1$s', '%2$s');", University, State);
 
         try (PreparedStatement addRowStatement = conn.prepareStatement(stmt);) {
           addRowStatement.execute();
