@@ -1,25 +1,24 @@
 section.introduction {
-  background-color: #fce181;
+  background-color: #b8e2e4;
   background-size: cover;
-  height: 50%;
 }
 div.col.s12.tb {
   color: white;
-  background-color: #026670;
+  background-color: #5ab8bf;
 }
 
 ul.tabs .indicator {
-  background-color: #02666f;
+  background-color: #56b5be;
 }
 
 ul.tabs .tab.col.s4 a.active {
-  background-color: #fce181;
-  color: #1c1709;
+  background-color: #b9e2e4;
+  color: #212b2b;
 }
 
 ul.tabs .tab.col.s4 a:focus.active {
   color: black;
-  background-color: rgb(252, 225, 129);
+  background-color: rgb(189 227 227);
 }
 
 li.tab.col.s4 {
@@ -27,21 +26,22 @@ li.tab.col.s4 {
 }
 
 li.tab.col.s4 a {
-  color: #026670;
+  color: #101717;
+  font-size: large;
 }
 
 li.tab.col.s4 a:hover {
-  color: black;
-  background: #fce181;
+  color: #101717;
+  background: #bde3e3;
 }
 
 nav.nav-wrapper {
-  background-color: #026670;
+  background-color: #5bb7bf;
   color: silver;
 }
 footer.page-footer {
-  background-color: #026670;
-  color: white;
+  background-color: #5bb7bf;
+  color: #ffffff;
   line-height: 50px;
   padding: 0 20px;
 }
@@ -49,4 +49,36 @@ footer.page-footer {
 sub.flow-text {
   color: grey;
   font-size: smaller;
+}
+
+/* Search page */
+div.search-bar {
+  background-color: #b8e2e4;
+}
+
+div.input-field {
+  display: flex;
+  text-indent: 3px;
+  flex-grow: 5;
+  font-size: 1.5rem;
+}
+
+div.top-line {
+  display: flex;
+}
+div.top-line p {
+  text-align: left;
+}
+
+div.col.card {
+  background-color: #5ab8bf;
+  font-size: large;
+  font-weight: 200;
+  color: #f9fdfd;
+  box-shadow: 3px 3px 5px 6px #b9e2e4;
+}
+
+span strong {
+  font-weight: 900;
+  font-size: x-large;
 }
