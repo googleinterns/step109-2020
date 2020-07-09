@@ -42,13 +42,15 @@ import javax.sql.DataSource;
 public class StudySetServlet extends HttpServlet {
   private final String search_sql_statement = 
     "SELECT COUNT(card.study_set_id), study_set.id, study_set.title, study_set.description, " +
-    "study_set.subject,  university.name, user_info.user_name FROM study_set JOIN university " +
+    "study_set.subject, university.name, user_info.user_name FROM study_set JOIN university " +
     "ON university.id = study_set.university_id JOIN user_info ON study_set.owner_id = user_info.id " +
-    "JOIN card ON card.study_set_id = study_set.id GROUP BY study_set.id, university.id, user_info.id";
+    "JOIN card ON card.study_set_id = study_set.id WHERE card.front ILIKE  ? OR card.back ILIKE ? OR " +
+    "study_set.title ILIKE ? OR study_set.description ILIKE ? GROUP BY study_set.id, university.id, user_info.id";
 
   public ArrayList<HashMap<String, String>> runSqlQuery(
     DataSource pool,
-    String search_sql_statement
+    String search_sql_statement,
+    String search_word
   )
     throws SQLException {
     ArrayList<HashMap<String, String>> studySets = new ArrayList<>();
@@ -58,6 +60,11 @@ public class StudySetServlet extends HttpServlet {
           search_sql_statement
         )
       ) {
+        String new_search_word = "%" + search_word + "%";
+        for (int i = 1 ; i <= 4 ; i ++) {
+            queryStatement.setString(i, new_search_word);
+        }
+        
         ResultSet result = queryStatement.executeQuery();
         while (result.next()) {
           HashMap<String, String> newEntry = new HashMap<>();
@@ -86,11 +93,13 @@ public class StudySetServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
     ServletContext servletContext = getServletContext();
+    String search_word  = request.getParameter("stringToSearchBy");
     DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
     try {
       ArrayList<HashMap<String, String>> studySets = runSqlQuery(
         pool,
-        search_sql_statement
+        search_sql_statement,
+        search_word
       );
       response.setContentType("application/json;");
       Gson gson = new Gson();
