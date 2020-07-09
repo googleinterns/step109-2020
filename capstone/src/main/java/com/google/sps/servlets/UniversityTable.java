@@ -44,27 +44,27 @@ public class UniversityTable
     DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
 
     if (pool == null) {
-      System.out.println("Not Working");
+      System.out.println("Connection to SQL database not Working");
       return;
     }
 
+    String path = System.getProperty("user.dir");
+    path += "/../../src/main/java/com/google/sps/csv/Mock_University_Table.csv";
+
+    if (!isFileExist(path)) {
+      System.out.println("Not Valid Path!");
+      return;
+    }
+
+    File data = new File(path);
+    Scanner dataScan = new Scanner(data);
+
     try (Connection conn = pool.getConnection()) {
-      String path = System.getProperty("user.dir");
-      path += "/../../src/main/java/com/google/sps/csv/Mock_University_Table.csv";
-
-      if (!isValidPath(path)) {
-        System.out.println("Not Valid Path!");
-        return;
-      }
-
-      File data = new File(path);
-      Scanner dataScan = new Scanner(data);
-
       populateTable(conn, dataScan);
     }
   }
 
-  public boolean isValidPath(String path) {
+  public boolean isFileExist(String path) {
     File data = new File(path);
     return data.exists();
   }
@@ -81,17 +81,25 @@ public class UniversityTable
       String curLine = dataScan.nextLine();
       if (!curLine.contains(",")) {
         System.out.println("Line does not have comma");
-      } else {
-        String[] arrayResponse = curLine.split(",", 2);
-        String University = arrayResponse[0];
-        String State = arrayResponse[1];
-        String stmt = String.format("INSERT INTO UNIVERSITY (name, state) Values('%1$s', '%2$s');", University, State);
+        continue;
+      }
+      String[] arrayResponse = curLine.split(",", 2);
+      if (arrayResponse.length != 2) {
+        System.out.println("The array length is incorrect");
+        continue;
+      }
+      String university = arrayResponse[0];
+      String state = arrayResponse[1];
+      String stmt = String.format(
+        "INSERT INTO UNIVERSITY (name, state) Values('%1$s', '%2$s');",
+        university,
+        state
+      );
 
-        try (PreparedStatement addRowStatement = conn.prepareStatement(stmt);) {
-          addRowStatement.execute();
-        }
+      try (PreparedStatement addRowStatement = conn.prepareStatement(stmt);) {
+        addRowStatement.execute();
       }
     }
   }
-  
+
 }
