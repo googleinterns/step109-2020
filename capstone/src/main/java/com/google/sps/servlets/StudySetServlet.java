@@ -40,12 +40,11 @@ import javax.sql.DataSource;
 
 @WebServlet("/study_set")
 public class StudySetServlet extends HttpServlet {
-  private final String search_sql_statement =
+  private final String search_sql_statement = 
     "SELECT COUNT(card.study_set_id), study_set.id, study_set.title, study_set.description, " +
     "study_set.subject,  university.name, user_info.user_name FROM study_set JOIN university " +
     "ON university.id = study_set.university_id JOIN user_info ON study_set.owner_id = user_info.id " +
-    "JOIN card ON card.study_set_id = study_set.id GROUP BY study_set.id, study_set.title, study_set.description, " +
-    "study_set.subject,  university.name, user_info.user_name ORDER BY study_set.update_time LIMIT 2";
+    "JOIN card ON card.study_set_id = study_set.id GROUP BY study_set.id, university.id, user_info.id";
 
   public ArrayList<HashMap<String, String>> runSqlQuery(
     DataSource pool,
