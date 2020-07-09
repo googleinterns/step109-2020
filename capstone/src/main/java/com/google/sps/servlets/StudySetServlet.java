@@ -44,7 +44,7 @@ public class StudySetServlet extends HttpServlet {
     "SELECT COUNT(card.study_set_id), study_set.id, study_set.title, study_set.description, " +
     "study_set.subject, university.name, user_info.user_name FROM study_set JOIN university " +
     "ON university.id = study_set.university_id JOIN user_info ON study_set.owner_id = user_info.id " +
-    "JOIN card ON card.study_set_id = study_set.id WHERE card.front ILIKE  ? OR card.back ILIKE ? OR " +
+    "JOIN card ON card.study_set_id = study_set.id WHERE card.front ILIKE ? OR card.back ILIKE ? OR " +
     "study_set.title ILIKE ? OR study_set.description ILIKE ? GROUP BY study_set.id, university.id, user_info.id";
 
   public ArrayList<HashMap<String, String>> runSqlQuery(
@@ -61,7 +61,7 @@ public class StudySetServlet extends HttpServlet {
         )
       ) {
         String new_search_word = "%" + search_word + "%";
-        for (int i = 1 ; i <= 4 ; i ++) {
+        for (int i = 1; i <= 4; i++) {
             queryStatement.setString(i, new_search_word);
         }
         
