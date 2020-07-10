@@ -7,56 +7,47 @@ var instance = M.Tabs.init(elem, options);
 const slide_menu = document.querySelectorAll(".sidenav");
 M.Sidenav.init(slide_menu, {});
 
-//Get Most Recent Study Sets To Display
-async function most_recent_studysets() {
-  const response = await fetch("/study_set");
-  const studySets = await response.json();
-  var configuredSetsToPost = configureCardsForSearchPage(studySets);
-
-  document.getElementById("results-container").innerHTML = configuredSetsToPost;
-}
-
 //Get Search Request From User and display result
-async function studysets_by_search() {
+async function studySetsBySearch() {
   const stringToSearchBy = document.getElementById("search").value;
-  const response = await fetch("/study_set?searchbar=" + stringToSearchBy);
+  const response = await fetch(
+    "/study_set?stringToSearchBy=" + stringToSearchBy
+  );
   const searchResponse = await response.json();
   var configuredSetsToPost = configureCardsForSearchPage(searchResponse);
-
   document.getElementById("results-container").innerHTML = configuredSetsToPost;
 }
 
 function configureCardsForSearchPage(studySets) {
   var configuredCardStudySets = "";
+  var counter = 0;
+
   for (var studySet of studySets) {
-    var title = studySet.title;
-    var subject = studySet.subject;
-    var numOfCards = studySet.study_set_length;
-    var author = studySet.user_author;
-    var university = studySet.university;
-    configuredCardStudySets += configureCard(
-      title,
-      subject,
-      numOfCards,
-      author,
-      university
-    );
+    configuredCardStudySets += configureCard(studySet);
+    counter++;
+  }
+
+  if (counter == 0) {
+    return (configuredCardStudySets = ` <div class="no-results"><h3>No Results Found...<i class="large material-icons">sentiment_dissatisfied</i></h3></div>`);
   }
   return configuredCardStudySets;
 }
 
-function configureCard(title, subject, numOfCards, author, university) {
-  return (configuredCardStudySet = [
-    '<a href="#" class="result-card"> ',
-    '<div class="row result-card"> ',
-    '<div class="col card s12 m12 l12">',
-    '<div class=""top-line""> ',
-    "<span><strong>" + title + "</strong>, " + subject + "</span>",
-    "</div>",
-    "<p>" + numOfCards + " cards in set</p>",
-    "<span> By " + author + " from " + university + "</span>",
-    "</div>",
-    "</div>",
-    "</a>",
-  ].join(""));
+function configureCard(studySet) {
+  return (configuredCardStudySet = `<a href="/viewStudySet.html?id= ${
+    studySet.id
+  }" class="result-card">
+      <div class="row result-card"> 
+        <div class="col card s12 m12 l12">
+          <div class="top-line">
+            <span><strong> ${studySet.title.toUpperCase()}</strong>, ${
+    studySet.subject
+  }</span>
+          </div>
+          <p>${studySet.study_set_length} cards in set</p>
+          <p><strong>DESCRIPTION</strong>, ${studySet.description}</p>
+          <span> By  ${studySet.user_author} from ${studySet.university}</span>
+         </div>
+      </div>
+    </a>`);
 }
