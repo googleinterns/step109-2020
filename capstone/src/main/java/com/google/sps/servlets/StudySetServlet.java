@@ -47,7 +47,6 @@ public class StudySetServlet extends HttpServlet {
     "JOIN card ON card.study_set_id = study_set.id WHERE study_set.subject ILIKE ? OR university.name ILIKE ? OR " +
     "study_set.title ILIKE ? OR study_set.description ILIKE ? OR user_info.user_name ILIKE ? " +
     "GROUP BY study_set.id, university.id, user_info.id";
-  private final long number_of_placeholders = search_sql_statement.chars().filter(ch -> ch == '?').count();
 
   public ArrayList<HashMap<String, String>> runSqlQuery(
     DataSource pool,
@@ -62,6 +61,7 @@ public class StudySetServlet extends HttpServlet {
           search_sql_statement
         )
       ) {
+        long number_of_placeholders = search_sql_statement.chars().filter(ch -> ch == '?').count();
         for (int i = 1; i <= number_of_placeholders; i++) {
             queryStatement.setString(i,  "%" + search_word + "%");
         }
