@@ -1,3 +1,5 @@
+package com.google.sps.servlets;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.File;
@@ -19,28 +21,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
-@WebServlet("/UniTable")
-public class UniversityTable
-  extends HttpServlet
-  implements ServletContextListener {
 
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-    try {
-      addTable();
-    } catch (SQLException Exception) {
-      System.out.println("Could not add to Table");
-    }
-  }
+
+
+public class UniversityTable{
 
   /**
    * Connects to SQL database and then scans the csv to update the database
    * file with the entries in the csv files
    *
    */
-  public void addTable() throws SQLException, FileNotFoundException {
-    ServletContext servletContext = getServletContext();
+  public void addTable(ServletContext servletContext) throws SQLException, FileNotFoundException {
     DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
 
     if (pool == null) {
@@ -51,7 +42,7 @@ public class UniversityTable
     String path = System.getProperty("user.dir");
     path += "/../../src/main/java/com/google/sps/csv/Mock_University_Table.csv";
 
-    if (!isFileExist(path)) {
+    if (!ifFileExist(path)) {
       System.out.println("Not Valid Path!");
       return;
     }
@@ -64,7 +55,7 @@ public class UniversityTable
     }
   }
 
-  public boolean isFileExist(String path) {
+  public boolean ifFileExist(String path) {
     File data = new File(path);
     return data.exists();
   }
