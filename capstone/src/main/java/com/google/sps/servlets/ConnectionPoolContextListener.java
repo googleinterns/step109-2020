@@ -96,6 +96,7 @@ public class ConnectionPoolContextListener implements ServletContextListener {
       "socketFactory",
       "com.google.cloud.sql.postgres.SocketFactory"
     );
+
     dbConfig.addDataSourceProperty(
       "cloudSqlInstance",
       CLOUD_SQL_CONNECTION_NAME
@@ -106,6 +107,7 @@ public class ConnectionPoolContextListener implements ServletContextListener {
     DataSource pool = new HikariDataSource(dbConfig);
     return pool;
   }
+
 
   private void createUniversityTable(Connection conn) throws SQLException {
     try (

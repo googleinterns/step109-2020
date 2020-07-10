@@ -1,8 +1,24 @@
+// Copyright 2019 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package com.google.sps.data;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
 public final class StudySet {
-  private Collection<Card> Cards;
+  private ArrayList<Card> Cards;
   private Long id;
   private String email;
   private String title;
@@ -16,13 +32,13 @@ public final class StudySet {
   private Long creationTime;
 
   public StudySet(
-    Collection<Card> Cards,
+    ArrayList<Card> Cards,
     Long id,
     String email,
     String title,
     Long userID,
     String description,
-    String university,
+    String university_id,
     String subject,
     String professor,
     String timePeriodSystem,
@@ -51,8 +67,8 @@ public final class StudySet {
     this.Cards.add(newCard);
   }
 
-  public void addCard(Long cardID, String front, String back) {
-    Card newCard = new Card(cardID,front, back);
+  public void addCard(Integer cardID, String front, String back, Integer studySetId) {
+    Card newCard = new Card(cardID,front, back, studySetId);
     this.Cards.add(newCard);
   }
 }
