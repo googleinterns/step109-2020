@@ -34,7 +34,7 @@ function configureSearchResponseToHTML(studySets) {
   return configuredStudySetInfoCards;
 }
 
-function formatCardInHTML(studySet) {
+function  formatCardInHTML(studySet) { 
   return `<a href="/viewStudySet.html?id= ${studySet.id}" class="result-card">
       <div class="row result-card"> 
         <div class="col card s12 m12 l12">
@@ -47,5 +47,6 @@ function formatCardInHTML(studySet) {
           <span> By  ${studySet.user_author} from ${studySet.university}</span>
          </div>
       </div>
-    </a>`;
+    </a>`
 }
+
