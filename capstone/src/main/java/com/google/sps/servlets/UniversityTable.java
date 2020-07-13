@@ -21,21 +21,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
-
-
-
-public class UniversityTable{
+public class UniversityTable {
 
   /**
    * Connects to SQL database and then scans the csv to update the database
    * file with the entries in the csv files
    *
    */
-  public void addTable(ServletContext servletContext) throws SQLException, FileNotFoundException {
+  public void addTable(ServletContext servletContext)
+    throws SQLException, FileNotFoundException {
     DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
 
     if (pool == null) {
-      System.out.println("Connection to SQL database not Working");
+      System.err.println(
+        "Connection to SQL database not working because servlet is not conntect to the database"
+      );
       return;
     }
 
@@ -43,7 +43,7 @@ public class UniversityTable{
     path += "/../../src/main/java/com/google/sps/csv/Mock_University_Table.csv";
 
     if (!ifFileExist(path)) {
-      System.out.println("Not Valid Path!");
+      System.err.println("File doesn't exist!");
       return;
     }
 
@@ -71,20 +71,20 @@ public class UniversityTable{
     while (dataScan.hasNext()) {
       String curLine = dataScan.nextLine();
       if (!curLine.contains(",")) {
-        System.out.println("Line does not have comma");
+        System.err.println("Line does not have comma");
         continue;
       }
-      String[] arrayResponse = curLine.split(",", 2);
+      String[] arrayResponse = curLine.split(",");
       if (arrayResponse.length != 2) {
-        System.out.println("The array length is incorrect");
+        System.err.println(
+          "Unable to split array into 2 parts using comma in file"
+        );
         continue;
       }
-      String university = arrayResponse[0];
-      String state = arrayResponse[1];
       String stmt = String.format(
         "INSERT INTO UNIVERSITY (name, state) Values('%1$s', '%2$s');",
-        university,
-        state
+        arrayResponse[0],
+        arrayResponse[1]
       );
 
       try (PreparedStatement addRowStatement = conn.prepareStatement(stmt);) {
@@ -92,5 +92,4 @@ public class UniversityTable{
       }
     }
   }
-
 }
