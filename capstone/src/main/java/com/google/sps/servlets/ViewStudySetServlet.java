@@ -91,27 +91,29 @@ public class ViewStudySetServlet extends HttpServlet {
       ) {
         ResultSet result = queryStatement.executeQuery();
         while (result.next()) {
-          String title = result.getString("title");
-          studySetDetails.put("title", title);
+          if(result.getRow()==1){
+            String title = result.getString("title");
+            studySetDetails.put("title", title);
 
-          String description = result.getString("description");
-          studySetDetails.put("description", description);
+            String description = result.getString("description");
+            studySetDetails.put("description", description);
 
-          String subject = result.getString("subject");
-          studySetDetails.put("subject", subject);
+            String subject = result.getString("subject");
+            studySetDetails.put("subject", subject);
 
-          String user_author = result.getString("user_name");
-          studySetDetails.put("user_author", user_author);
+            String user_author = result.getString("user_name");
+            studySetDetails.put("user_author", user_author);
 
-          String university = result.getString("name");
-          studySetDetails.put("university", university);
-
+            String university = result.getString("name");
+            studySetDetails.put("university", university);
+          }
           String cardFront = result.getString("front");
           String cardBack = result.getString("back");
           Card card = new Card(cardFront, cardBack);
           studySetCards.add(card);
-          studySetDetails.put("cards", studySetCards);
+         
         }
+        studySetDetails.put("cards", studySetCards);
         return studySetDetails;
       }
     }
