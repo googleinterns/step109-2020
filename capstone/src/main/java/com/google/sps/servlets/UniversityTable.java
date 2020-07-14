@@ -43,7 +43,7 @@ public class UniversityTable {
     path += "/../../src/main/java/com/google/sps/csv/Mock_University_Table.csv";
 
     if (!ifFileExist(path)) {
-      System.err.println("File doesn't exist");
+      System.err.println("File doesn't exist in this attempted path" + path);
       return;
     }
 
@@ -70,10 +70,6 @@ public class UniversityTable {
     throws SQLException {
     while (dataScan.hasNext()) {
       String curLine = dataScan.nextLine();
-      if (!curLine.contains(",")) {
-        System.err.println("Line does not have comma");
-        continue;
-      }
       String[] arrayResponse = curLine.split(",");
       if (arrayResponse.length != 2) {
         System.err.println(
