@@ -27,6 +27,11 @@ public final class Card{
     this.study_set_id = study_set_id;
   }
 
+  public Card(String infront, String inback){
+    this.front = infront;
+    this.back = inback;
+  }
+
   public Integer getID(){
     return this.id;
   }
