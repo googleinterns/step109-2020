@@ -91,7 +91,7 @@ public class ViewStudySetServlet extends HttpServlet {
       ) {
         ResultSet result = queryStatement.executeQuery();
         while (result.next()) {
-          if(result.getRow()==1){
+          if (result.getRow() == 1) {
             String title = result.getString("title");
             studySetDetails.put("title", title);
 
@@ -111,7 +111,6 @@ public class ViewStudySetServlet extends HttpServlet {
           String cardBack = result.getString("back");
           Card card = new Card(cardFront, cardBack);
           studySetCards.add(card);
-         
         }
         studySetDetails.put("cards", studySetCards);
         return studySetDetails;
