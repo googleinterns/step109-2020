@@ -43,7 +43,7 @@ public class UniversityTable {
     path += "/../../src/main/java/com/google/sps/csv/Mock_University_Table.csv";
 
     if (!ifFileExist(path)) {
-      System.err.println("File doesn't exist in this attempted path" + path);
+      System.err.println("File doesn't exist in this attempted path: " + path);
       return;
     }
 
