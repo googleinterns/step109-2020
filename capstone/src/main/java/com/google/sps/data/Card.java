@@ -18,13 +18,13 @@ public final class Card{
   private Integer id;
   private String front;
   private String back;
-  private Integer study_set_id; 
+  private Integer StudySetId; 
 
-  public Card(Integer id, String front, String back, Integer study_set_id){
+  public Card(Integer id, String front, String back, Integer StudySetId){
     this.id = id;
     this.front = front;
     this.back = back;
-    this.study_set_id = study_set_id;
+    this.StudySetId = StudySetId;
   }
 
   public Card(String front, String back){
@@ -45,7 +45,7 @@ public final class Card{
    } 
   
   public Integer getStudySetId(){
-    return this.study_set_id;
+    return this.StudySetId;
   }
 
   public void setFront(String front){

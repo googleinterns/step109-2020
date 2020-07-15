@@ -57,10 +57,9 @@ public class StudySetServlet extends HttpServlet {
     " WHERE  study_set.id= ?" +
     " GROUP BY card.id, study_set.id, university.id, user_info.id;";
 
-  public ArrayList<HashMap<String, String>> runSqlQuery(
+  public ArrayList<HashMap<String, String>> runSearchStudySetSqlQuery(
     DataSource pool,
-    String SEARCH_SQL_STATEMENT,
-    String search_word
+    String searchWord
   )
     throws SQLException {
     ArrayList<HashMap<String, String>> studySets = new ArrayList<>();
@@ -75,7 +74,7 @@ public class StudySetServlet extends HttpServlet {
           .filter(ch -> ch == '?')
           .count();
         for (int i = 1; i <= number_of_placeholders; i++) {
-          queryStatement.setString(i, "%" + search_word + "%");
+          queryStatement.setString(i, "%" + searchWord + "%");
         }
 
         ResultSet result = queryStatement.executeQuery();
@@ -147,47 +146,36 @@ public class StudySetServlet extends HttpServlet {
     }
   }
 
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
+  public Object getRequestResult(HttpServletRequest request)
     throws ServletException, IOException {
+    Object requestResult = null;
     ServletContext servletContext = getServletContext();
     DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
-    if (request.getPathInfo() == null) {
-      String search_word = request.getParameter("stringToSearchBy");
-      try {
-        ArrayList<HashMap<String, String>> studySets = runSqlQuery(
-          pool,
-          SEARCH_SQL_STATEMENT,
-          search_word
-        );
-        response.setContentType("application/json;");
-        Gson gson = new Gson();
-        String studySetsResult = gson.toJson(studySets);
-        response.getWriter().println(studySetsResult);
-      } catch (SQLException ex) {
-        throw new RuntimeException(
-          "There is an error with your sql statement ... ",
-          ex
-        );
-      }
-      return;
-    }
-    String studySetID = request.getPathInfo();
+    String pathInfo = request.getPathInfo();
     try {
-      HashMap<String, Object> studySetDetails = runViewStudySetSqlQuery(
-        pool,
-        studySetID
-      );
-      response.setContentType("application/json;");
-      Gson gson = new Gson();
-      String studySetDetailsGSON = gson.toJson(studySetDetails);
-      response.getWriter().println(studySetDetailsGSON);
+      if (pathInfo == null) {
+        String search_word = request.getParameter("stringToSearchBy");
+        requestResult = runSearchStudySetSqlQuery(pool, search_word);
+      } else {
+        requestResult = runViewStudySetSqlQuery(pool, pathInfo);
+      }
+      return requestResult;
     } catch (SQLException ex) {
       throw new RuntimeException(
         "There is an error with your sql statement ... ",
         ex
       );
     }
+  }
+
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+    Object requestResult = getRequestResult(request);
+    response.setContentType("application/json;");
+    Gson gson = new Gson();
+    String requestResultJSON = gson.toJson(requestResult);
+    response.getWriter().println(requestResultJSON);
   }
   //TODO doPost for creating and storing a study set
 
