@@ -170,23 +170,23 @@ public class StudySetServlet extends HttpServlet {
           ex
         );
       }
-    } else {
-      String studySetID = request.getPathInfo();
-      try {
-        HashMap<String, Object> studySetDetails = runViewStudySetSqlQuery(
-          pool,
-          studySetID
-        );
-        response.setContentType("application/json;");
-        Gson gson = new Gson();
-        String studySetDetailsGSON = gson.toJson(studySetDetails);
-        response.getWriter().println(studySetDetailsGSON);
-      } catch (SQLException ex) {
-        throw new RuntimeException(
-          "There is an error with your sql statement ... ",
-          ex
-        );
-      }
+      return;
+    }
+    String studySetID = request.getPathInfo();
+    try {
+      HashMap<String, Object> studySetDetails = runViewStudySetSqlQuery(
+        pool,
+        studySetID
+      );
+      response.setContentType("application/json;");
+      Gson gson = new Gson();
+      String studySetDetailsGSON = gson.toJson(studySetDetails);
+      response.getWriter().println(studySetDetailsGSON);
+    } catch (SQLException ex) {
+      throw new RuntimeException(
+        "There is an error with your sql statement ... ",
+        ex
+      );
     }
   }
   //TODO doPost for creating and storing a study set
