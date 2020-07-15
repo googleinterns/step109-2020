@@ -38,9 +38,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
-@WebServlet("/study_set")
+@WebServlet(urlPatterns = { "/study_set/*" })
 public class StudySetServlet extends HttpServlet {
-  private final String search_sql_statement = 
+  private final String SEARCH_SQL_STATEMENT =
     "SELECT COUNT(card.study_set_id), study_set.id, study_set.title, study_set.description, " +
     "study_set.subject, university.name, user_info.user_name FROM study_set JOIN university " +
     "ON university.id = study_set.university_id JOIN user_info ON study_set.owner_id = user_info.id " +
@@ -48,9 +48,18 @@ public class StudySetServlet extends HttpServlet {
     "study_set.title ILIKE ? OR study_set.description ILIKE ? OR user_info.user_name ILIKE ? " +
     "GROUP BY study_set.id, university.id, user_info.id";
 
+  private final String VIEW_STUDY_SET_QUERY =
+    " SELECT card.front, card.back, study_set.title, study_set.description, study_set.subject, university.name, user_info.user_name " +
+    " FROM study_set" +
+    " JOIN university ON university.id = study_set.university_id" +
+    " JOIN user_info ON study_set.owner_id = user_info.id" +
+    " JOIN card ON card.study_set_id = study_set.id" +
+    " WHERE  study_set.id= ?" +
+    " GROUP BY card.id, study_set.id, university.id, user_info.id;";
+
   public ArrayList<HashMap<String, String>> runSqlQuery(
     DataSource pool,
-    String search_sql_statement,
+    String SEARCH_SQL_STATEMENT,
     String search_word
   )
     throws SQLException {
@@ -58,14 +67,17 @@ public class StudySetServlet extends HttpServlet {
     try (Connection conn = pool.getConnection()) {
       try (
         PreparedStatement queryStatement = conn.prepareStatement(
-          search_sql_statement
+          SEARCH_SQL_STATEMENT
         )
       ) {
-        long number_of_placeholders = search_sql_statement.chars().filter(ch -> ch == '?').count();
+        long number_of_placeholders = SEARCH_SQL_STATEMENT
+          .chars()
+          .filter(ch -> ch == '?')
+          .count();
         for (int i = 1; i <= number_of_placeholders; i++) {
-            queryStatement.setString(i,  "%" + search_word + "%");
+          queryStatement.setString(i, "%" + search_word + "%");
         }
-        
+
         ResultSet result = queryStatement.executeQuery();
         while (result.next()) {
           HashMap<String, String> newEntry = new HashMap<>();
@@ -90,27 +102,91 @@ public class StudySetServlet extends HttpServlet {
     }
   }
 
+  public HashMap<String, Object> runViewStudySetSqlQuery(
+    DataSource pool,
+    String studySetID
+  )
+    throws SQLException {
+    HashMap<String, Object> studySetDetails = new HashMap<>();
+    ArrayList<Card> studySetCards = new ArrayList<>();
+
+    try (Connection conn = pool.getConnection()) {
+      try (
+        PreparedStatement query_statement = conn.prepareStatement(
+          VIEW_STUDY_SET_QUERY
+        )
+      ) {
+        studySetID = studySetID.substring(1);
+        query_statement.setInt(1, Integer.parseInt(studySetID));
+        ResultSet result = query_statement.executeQuery();
+        while (result.next()) {
+          if (studySetDetails.containsKey("title") == false) {
+            String title = result.getString("title");
+            studySetDetails.put("title", title);
+
+            String description = result.getString("description");
+            studySetDetails.put("description", description);
+
+            String subject = result.getString("subject");
+            studySetDetails.put("subject", subject);
+
+            String user_author = result.getString("user_name");
+            studySetDetails.put("user_author", user_author);
+
+            String university = result.getString("name");
+            studySetDetails.put("university", university);
+          }
+          String cardFront = result.getString("front");
+          String cardBack = result.getString("back");
+          Card card = new Card(cardFront, cardBack);
+          studySetCards.add(card);
+        }
+        studySetDetails.put("cards", studySetCards);
+        return studySetDetails;
+      }
+    }
+  }
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
     ServletContext servletContext = getServletContext();
-    String search_word  = request.getParameter("stringToSearchBy");
     DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
-    try {
-      ArrayList<HashMap<String, String>> studySets = runSqlQuery(
-        pool,
-        search_sql_statement,
-        search_word
-      );
-      response.setContentType("application/json;");
-      Gson gson = new Gson();
-      String studySetsResult = gson.toJson(studySets);
-      response.getWriter().println(studySetsResult);
-    } catch (SQLException ex) {
-      throw new RuntimeException(
-        "There is an error with your sql statement ... ",
-        ex
-      );
+    if (request.getPathInfo() == null) {
+      String search_word = request.getParameter("stringToSearchBy");
+      try {
+        ArrayList<HashMap<String, String>> studySets = runSqlQuery(
+          pool,
+          SEARCH_SQL_STATEMENT,
+          search_word
+        );
+        response.setContentType("application/json;");
+        Gson gson = new Gson();
+        String studySetsResult = gson.toJson(studySets);
+        response.getWriter().println(studySetsResult);
+      } catch (SQLException ex) {
+        throw new RuntimeException(
+          "There is an error with your sql statement ... ",
+          ex
+        );
+      }
+    } else {
+      String studySetID = request.getPathInfo();
+      try {
+        HashMap<String, Object> studySetDetails = runViewStudySetSqlQuery(
+          pool,
+          studySetID
+        );
+        response.setContentType("application/json;");
+        Gson gson = new Gson();
+        String studySetDetailsGSON = gson.toJson(studySetDetails);
+        response.getWriter().println(studySetDetailsGSON);
+      } catch (SQLException ex) {
+        throw new RuntimeException(
+          "There is an error with your sql statement ... ",
+          ex
+        );
+      }
     }
   }
   //TODO doPost for creating and storing a study set
