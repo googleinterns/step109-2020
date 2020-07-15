@@ -42,13 +42,16 @@ import javax.sql.DataSource;
 
 @WebServlet("/users")
 public class UserServlet extends HttpServlet {
-  private final String get_user_row_query =
+  private final String GET_USER_ROW_QUERY =
     "SELECT user_info.id, user_info.email,  user_info.full_name, " +
     "user_info.user_name, university.name FROM user_info JOIN university " +
     "ON university.id = user_info.university_id WHERE user_info.email = ?";
 
-  private final String create_new_user_query =
+  private final String CREATE_NEW_USER_QUERY =
     "INSERT INTO user_info (user_name, full_name, email, verified, university_id) VALUES (?, ?, ?, true, ?)";
+
+  private final String URL_TO_REDIRECT_AFTER_USER_LOGS_OUT = "";
+  private final String URL_TO_REDIRECT_AFTER_USER_LOGS_IN = "";
 
   /**
    * This method gets the related information associated with a user based on the email provided by the userService parameter.
@@ -65,66 +68,112 @@ public class UserServlet extends HttpServlet {
     HttpServletResponse response
   )
     throws SQLException, IOException {
-    String urlToRedirectToAfterUserLogsOut = "";
-    String urlToRedirectToAfterUserLogsIn = "";
-
     HashMap<String, String> userDetails = new HashMap<>();
 
     Boolean isUserLoggedIn = userService.isUserLoggedIn();
-    if (isUserLoggedIn) {
-      String email = userService.getCurrentUser().getEmail();
-      if (!email.endsWith(".edu")) {
-        userDetails.put("status_code", "412");
-        String logoutUrl = userService.createLogoutURL(
-          urlToRedirectToAfterUserLogsOut
-        );
-        userDetails.put("logoutUrl", logoutUrl);
-        return userDetails;
-      }
-      try (Connection conn = pool.getConnection()) {
-        try (
-          PreparedStatement queryStatement = conn.prepareStatement(
-            get_user_row_query
-          )
-        ) {
-          queryStatement.setString(1, email);
-          ResultSet result = queryStatement.executeQuery();
-          if (result.next() == false) {
-            response.sendRedirect("/userDetails.html");
-            userDetails.put("status_code", "307");
-            return userDetails;
-          } else {
-            do {
-              String user_status = Boolean.toString(isUserLoggedIn);
-              userDetails.put("user_status", user_status);
-              String id = Integer.toString(result.getInt("id"));
-              userDetails.put("id", id);
-              userDetails.put("email", email);
-              String full_name = result.getString("full_name");
-              userDetails.put("full_name", full_name);
-              String user_name = result.getString("user_name");
-              userDetails.put("user_name", user_name);
-              String university = result.getString("name");
-              userDetails.put("university", university);
-              String logoutUrl = userService.createLogoutURL(
-                urlToRedirectToAfterUserLogsOut
-              );
-              userDetails.put("logoutUrl", logoutUrl);
-              userDetails.put("status_code", "200");
-            } while (result.next());
-            return userDetails;
-          }
-        }
-      }
-    } else {
+    if (!isUserLoggedIn) {
       String user_status = Boolean.toString(isUserLoggedIn);
       userDetails.put("user_status", user_status);
       String loginUrl = userService.createLoginURL(
-        urlToRedirectToAfterUserLogsIn
+        URL_TO_REDIRECT_AFTER_USER_LOGS_IN
       );
       userDetails.put("loginUrl", loginUrl);
       userDetails.put("status_code", "401");
       return userDetails;
+    }
+    return checkForStudentEmail(
+      pool,
+      userService,
+      get_user_row_query,
+      response
+    );
+  }
+
+  /**
+   * This method checks if the email supplied is a student email by confirming the '.edu' tld.
+   * @param pool It is a DataSource object that serves to interact with our database connection.
+   * @param userService This is a UserService object that holds information about the current user.
+   * @param get_user_row_query This is an SQL statement to query our database for the needed user's information.
+   * @param response A HttpServletResponse object that holds the information that will be sent back to the user.
+   * @return HashMap<String, String> saves a key-value pair of all neccessary user details derived.
+   */
+  public HashMap<String, String> checkForStudentEmail(
+    DataSource pool,
+    UserService userService,
+    String get_user_row_query,
+    HttpServletResponse response
+  )
+    throws SQLException, IOException {
+    HashMap<String, String> userDetails = new HashMap<>();
+    String email = userService.getCurrentUser().getEmail();
+    if (!email.endsWith(".edu")) {
+      userDetails.put("status_code", "412");
+      String logoutUrl = userService.createLogoutURL(
+        URL_TO_REDIRECT_AFTER_USER_LOGS_OUT
+      );
+      userDetails.put("logoutUrl", logoutUrl);
+      return userDetails;
+    }
+    return checkIfUserIsAlreadyRegistered(
+      pool,
+      userService,
+      get_user_row_query,
+      response
+    );
+  }
+
+  /**
+   * This method checks if the current user is already in  our database, if not we redirect them to fill in their info.
+   * @param pool It is a DataSource object that serves to interact with our database connection.
+   * @param userService This is a UserService object that holds information about the current user.
+   * @param get_user_row_query This is an SQL statement to query our database for the needed user's information.
+   * @param response A HttpServletResponse object that holds the information that will be sent back to the user.
+   * @return HashMap<String, String> saves a key-value pair of all neccessary user details derived.
+   */
+  public HashMap<String, String> checkIfUserIsAlreadyRegistered(
+    DataSource pool,
+    UserService userService,
+    String get_user_row_query,
+    HttpServletResponse response
+  )
+    throws SQLException, IOException {
+    HashMap<String, String> userDetails = new HashMap<>();
+    String email = userService.getCurrentUser().getEmail();
+    Boolean isUserLoggedIn = userService.isUserLoggedIn();
+    try (Connection conn = pool.getConnection()) {
+      try (
+        PreparedStatement queryStatement = conn.prepareStatement(
+          get_user_row_query
+        )
+      ) {
+        queryStatement.setString(1, email);
+        ResultSet result = queryStatement.executeQuery();
+        if (result.next() == false) {
+          response.sendRedirect("/userDetails.html");
+          userDetails.put("status_code", "307");
+          return userDetails;
+        } else {
+          do {
+            String user_status = Boolean.toString(isUserLoggedIn);
+            userDetails.put("user_status", user_status);
+            String id = Integer.toString(result.getInt("id"));
+            userDetails.put("id", id);
+            userDetails.put("email", email);
+            String full_name = result.getString("full_name");
+            userDetails.put("full_name", full_name);
+            String user_name = result.getString("user_name");
+            userDetails.put("user_name", user_name);
+            String university = result.getString("name");
+            userDetails.put("university", university);
+            String logoutUrl = userService.createLogoutURL(
+              URL_TO_REDIRECT_AFTER_USER_LOGS_OUT
+            );
+            userDetails.put("logoutUrl", logoutUrl);
+            userDetails.put("status_code", "200");
+          } while (result.next());
+          return userDetails;
+        }
+      }
     }
   }
 
@@ -146,7 +195,7 @@ public class UserServlet extends HttpServlet {
       HashMap<String, String> userDetails = getUserDetails(
         pool,
         userService,
-        get_user_row_query,
+        GET_USER_ROW_QUERY,
         response
       );
       String userResult = new Gson().toJson(userDetails);
@@ -164,12 +213,14 @@ public class UserServlet extends HttpServlet {
    * @param pool It is a DataSource object that serves to interact with our database connection.
    * @param userService This is a UserService object that holds information about the current user.
    * @param request A HttpServletRequest object that holds the information sent by the user.
+   * @param create_new_user_query A string object that contain the SQL query to create a new user in our database.
    * @return void
    */
   public void saveUserDetails(
     DataSource pool,
     UserService userService,
-    HttpServletRequest request
+    HttpServletRequest request,
+    String create_new_user_query
   )
     throws SQLException {
     try (Connection conn = pool.getConnection()) {
@@ -207,7 +258,7 @@ public class UserServlet extends HttpServlet {
     UserService userService = UserServiceFactory.getUserService();
 
     try {
-      saveUserDetails(pool, userService, request);
+      saveUserDetails(pool, userService, request, CREATE_NEW_USER_QUERY);
     } catch (SQLException ex) {
       throw new RuntimeException(
         "There is an error with your sql statement ... ",
