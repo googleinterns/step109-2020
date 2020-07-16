@@ -40,6 +40,7 @@ import javax.sql.DataSource;
 
 @WebServlet(urlPatterns = { "/study_set/*" })
 public class StudySetServlet extends HttpServlet {
+    
   private final String SEARCH_SQL_STATEMENT =
     "SELECT COUNT(card.study_set_id), study_set.id, study_set.title, study_set.description, " +
     "study_set.subject, university.name, user_info.user_name FROM study_set JOIN university " +
@@ -69,19 +70,19 @@ public class StudySetServlet extends HttpServlet {
           SEARCH_SQL_STATEMENT
         )
       ) {
-        long number_of_placeholders = SEARCH_SQL_STATEMENT
+        long numberOfPlaceholders = SEARCH_SQL_STATEMENT
           .chars()
           .filter(ch -> ch == '?')
           .count();
-        for (int i = 1; i <= number_of_placeholders; i++) {
+        for (int i = 1; i <= numberOfPlaceholders; i++) {
           queryStatement.setString(i, "%" + searchWord + "%");
         }
 
         ResultSet result = queryStatement.executeQuery();
         while (result.next()) {
           HashMap<String, String> newEntry = new HashMap<>();
-          String study_set_length = Integer.toString(result.getInt("count"));
-          newEntry.put("study_set_length", study_set_length);
+          String studySetLength = Integer.toString(result.getInt("count"));
+          newEntry.put("study_set_length", studySetLength);
           String id = Integer.toString(result.getInt("id"));
           newEntry.put("id", id);
           String title = result.getString("title");
@@ -90,8 +91,8 @@ public class StudySetServlet extends HttpServlet {
           newEntry.put("description", description);
           String subject = result.getString("subject");
           newEntry.put("subject", subject);
-          String user_author = result.getString("user_name");
-          newEntry.put("user_author", user_author);
+          String userAuthor = result.getString("user_name");
+          newEntry.put("user_author", userAuthor);
           String university = result.getString("name");
           newEntry.put("university", university);
           studySets.add(newEntry);
@@ -148,18 +149,16 @@ public class StudySetServlet extends HttpServlet {
 
   public Object getRequestResult(HttpServletRequest request)
     throws ServletException, IOException {
-    Object requestResult = null;
     ServletContext servletContext = getServletContext();
     DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
     String pathInfo = request.getPathInfo();
+
     try {
       if (pathInfo == null) {
-        String search_word = request.getParameter("stringToSearchBy");
-        requestResult = runSearchStudySetSqlQuery(pool, search_word);
-      } else {
-        requestResult = runViewStudySetSqlQuery(pool, pathInfo);
+        String searchWord = request.getParameter("stringToSearchBy");
+        return runSearchStudySetSqlQuery(pool, searchWord);
       }
-      return requestResult;
+      return runViewStudySetSqlQuery(pool, pathInfo);
     } catch (SQLException ex) {
       throw new RuntimeException(
         "There is an error with your sql statement ... ",
@@ -171,10 +170,9 @@ public class StudySetServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-    Object requestResult = getRequestResult(request);
     response.setContentType("application/json;");
     Gson gson = new Gson();
-    String requestResultJSON = gson.toJson(requestResult);
+    String requestResultJSON = gson.toJson(getRequestResult(request));
     response.getWriter().println(requestResultJSON);
   }
   //TODO doPost for creating and storing a study set
