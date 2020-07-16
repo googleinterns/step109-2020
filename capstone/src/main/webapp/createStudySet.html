@@ -1,21 +1,116 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Studentia-Create Study Set</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <script src="script.js"></script>
     <!--Import Google Icon Font-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
     <!--Import materialize.css-->
-    <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="css/materialize.min.css"
+      media="screen,projection"
+    />
 
     <!--Let browser know website is optimized for mobile-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
-     <h3>Create Study Set</h3>
-     <!--JavaScript at end of body for optimized loading-->
-     <script type="text/javascript" src="js/materialize.min.js"></script>
+    <nav class="nav-wrapper">
+      <a href="#" class="brand-logo">Studentia</a>
+      <a href="#" class="sidenav-trigger" data-target="slide_out"
+        ><i class="material-icons">menu</i></a
+      >
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a href="findStudySet.html">Search</a></li>
+        <li><a href="index.html">Home</a></li>
+      </ul>
+    </nav>
+
+    <div class="row">
+      <div class="col s4 left-align teal lighten-4 z-depth-3">
+        <p class="flow-text white-text">First Step to Create Study Set</p>
+        <form action="/study_set" method="POST">
+          <div class="input-field col s12">
+            <input type="text" id="user_id" name="user_id" />
+            <label for="user_id">user_id:</label>
+          </div>
+
+          <div class="input-field col s12">
+            <input type="text" id="title" name="title" />
+            <label for="title">title:</label>
+          </div>
+
+          <div class="input-field col s12">
+            <label for="subject">subject:</label>
+            <input type="text" id="subject" name="subject" />
+          </div>
+
+          <div class="input-field col s12">
+            <label for="description">description:</label>
+            <input type="text" id="description" name="description" />
+          </div>
+
+          <div class="input-field col s12">
+            <label for="university_id">university_id:</label>
+            <input type="text" id="university_id" name="university_id" />
+          </div>
+
+          <div class="input-field col s12">
+            <label for="professor">professor:</label>
+            <input type="text" id="professor" name="professor" />
+          </div>
+
+          <div class="input-field col s12">
+            <label for="academic_time">academic_time:</label>
+            <input type="text" id="academic_time" name="academic_time" />
+          </div>
+
+          <div class="input-field col s12">
+            <label for="course_name">course_name:</label>
+            <input type="text" id="course_name" name="course_name" />
+          </div>
+
+          <div class="input-field col s12">
+            <label for="creation_time">creation_time:</label>
+            <input type="text" id="creation_time" name="creation_time" />
+          </div>
+
+          <button class="btn center-align" type="submit" name="action">
+            Submit
+            <i class="material-icons right">send</i>
+          </button>
+        </form>
+      </div>
+
+      <div class="col s1 left-align"></div>
+
+      <div class="col s7 center-align cyan darken-3">
+        <form action="#" id="card_form">
+          <div class="row">
+            <div class="input-field col s6">
+              <input id="front" type="text" class="validate" />
+              <label for="front">Front</label>
+            </div>
+            <div class="input-field col s6">
+              <input id="back" type="text" class="validate" />
+              <label for="back">Back</label>
+            </div>
+          </div>
+        </form>
+        <button class="btn" onCLick="addCard()">
+          Add Card
+          <i class="material-icons left">add</i>
+        </button>
+      </div>
+    </div>
+    <!--JavaScript at end of body for optimized loading-->
+    <script type="text/javascript" src="js/materialize.min.js"></script>
   </body>
 </html>

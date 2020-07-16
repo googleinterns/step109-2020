@@ -49,3 +49,43 @@ function  formatCardInHTML(studySet) {
       </div>
     </a>`;
 }
+
+function addCard() {
+    var form = document.getElementById("card_form");
+
+    var newFrontCard = document.createElement("div");
+    newFrontCard.setAttribute("class","input-field col s6");
+
+    var frontCard = document.createElement("input");
+    frontCard.setAttribute("id","front");
+    frontCard.setAttribute("type","text");
+    frontCard.setAttribute("class","validate");
+
+    var frontLabel = document.createElement("label");
+    frontLabel.setAttribute("for","front");
+    var frontText = document.createTextNode("Front");
+    frontLabel.append(frontText);
+
+    newFrontCard.append(frontCard);
+    newFrontCard.append(frontLabel);
+
+    form.appendChild(newFrontCard);
+
+    var newBackCard = document.createElement("div");
+    newBackCard.setAttribute("class","input-field col s6");
+
+    var backCard = document.createElement("input");
+    backCard.setAttribute("id","back");
+    backCard.setAttribute("type","text");
+    backCard.setAttribute("class","validate");
+
+    var backLabel = document.createElement("label");
+    backLabel.setAttribute("for","back");
+    var backText = document.createTextNode("Back");
+    backLabel.append(backText);
+
+    newBackCard.append(backCard);
+    newBackCard.append(backLabel);
+
+    form.appendChild(newBackCard);
+}
