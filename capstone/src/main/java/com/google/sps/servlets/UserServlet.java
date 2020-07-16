@@ -44,8 +44,9 @@ import javax.sql.DataSource;
 public class UserServlet extends HttpServlet {
   private final String GET_USER_ROW_QUERY =
     "SELECT user_info.id, user_info.email,  user_info.full_name, " +
-    "user_info.user_name, university.name FROM user_info JOIN university " +
-    "ON university.id = user_info.university_id WHERE user_info.email = ?";
+    "user_info.user_name, university.name " +
+    "FROM user_info JOIN university ON university.id = user_info.university_id " +
+    "WHERE user_info.email = ?";
 
   private final String CREATE_NEW_USER_QUERY =
     "INSERT INTO user_info (user_name, full_name, email, verified, university_id) VALUES (?, ?, ?, true, ?)";
@@ -74,10 +75,7 @@ public class UserServlet extends HttpServlet {
     if (!isUserLoggedIn) {
       String user_status = Boolean.toString(isUserLoggedIn);
       userDetails.put("user_status", user_status);
-      String loginUrl = userService.createLoginURL(
-        URL_TO_REDIRECT_AFTER_USER_LOGS_IN
-      );
-      userDetails.put("loginUrl", loginUrl);
+      userDetails.put("loginUrl",  userService.createLoginURL(URL_TO_REDIRECT_AFTER_USER_LOGS_IN));
       userDetails.put("status_code", "401");
       return userDetails;
     }
@@ -108,10 +106,7 @@ public class UserServlet extends HttpServlet {
     String email = userService.getCurrentUser().getEmail();
     if (!email.endsWith(".edu")) {
       userDetails.put("status_code", "412");
-      String logoutUrl = userService.createLogoutURL(
-        URL_TO_REDIRECT_AFTER_USER_LOGS_OUT
-      );
-      userDetails.put("logoutUrl", logoutUrl);
+      userDetails.put("logoutUrl", userService.createLogoutURL(URL_TO_REDIRECT_AFTER_USER_LOGS_OUT));
       return userDetails;
     }
     return checkIfUserIsAlreadyRegistered(
@@ -140,41 +135,48 @@ public class UserServlet extends HttpServlet {
     HashMap<String, String> userDetails = new HashMap<>();
     String email = userService.getCurrentUser().getEmail();
     Boolean isUserLoggedIn = userService.isUserLoggedIn();
-    try (Connection conn = pool.getConnection()) {
-      try (
-        PreparedStatement queryStatement = conn.prepareStatement(
-          get_user_row_query
-        )
-      ) {
-        queryStatement.setString(1, email);
-        ResultSet result = queryStatement.executeQuery();
-        if (result.next() == false) {
-          response.sendRedirect("/userDetails.html");
-          userDetails.put("status_code", "307");
-          return userDetails;
-        } else {
-          do {
-            String user_status = Boolean.toString(isUserLoggedIn);
-            userDetails.put("user_status", user_status);
-            String id = Integer.toString(result.getInt("id"));
-            userDetails.put("id", id);
-            userDetails.put("email", email);
-            String full_name = result.getString("full_name");
-            userDetails.put("full_name", full_name);
-            String user_name = result.getString("user_name");
-            userDetails.put("user_name", user_name);
-            String university = result.getString("name");
-            userDetails.put("university", university);
-            String logoutUrl = userService.createLogoutURL(
-              URL_TO_REDIRECT_AFTER_USER_LOGS_OUT
-            );
-            userDetails.put("logoutUrl", logoutUrl);
-            userDetails.put("status_code", "200");
-          } while (result.next());
-          return userDetails;
-        }
+    try (
+      Connection conn = pool.getConnection();
+      PreparedStatement queryStatement = conn.prepareStatement(
+        get_user_row_query
+      )
+    ) {
+      queryStatement.setString(1, email);
+      ResultSet result = queryStatement.executeQuery();
+      if (result.next() == false) {
+        response.sendRedirect("/userDetails.html");
+        userDetails.put("status_code", "307");
+        return userDetails;
       }
+      return retrieveExistingUserInfo(result, userService);
     }
+  }
+
+  /**
+   * This method retrieves all the neccessary information associated with the current user from our database.
+   * @param userService This is a UserService object that holds information about the current user.
+   * @param result A ResultSet object that  represents  the  result set of the database select query.
+   * @return HashMap<String, String> saves a key-value pair of all neccessary user details derived.
+   */
+  public HashMap<String, String> retrieveExistingUserInfo(
+    ResultSet result,
+    UserService userService
+  )
+    throws SQLException, IOException {
+    HashMap<String, String> userDetails = new HashMap<>();
+    String email = userService.getCurrentUser().getEmail();
+    Boolean isUserLoggedIn = userService.isUserLoggedIn();
+    do {
+      userDetails.put("user_status", Boolean.toString(isUserLoggedIn));
+      userDetails.put("id", Integer.toString(result.getInt("id")));
+      userDetails.put("email", email);
+      userDetails.put("full_name", result.getString("full_name"));
+      userDetails.put("user_name", result.getString("user_name"));
+      userDetails.put("university", result.getString("name"));
+      userDetails.put("logoutUrl", userService.createLogoutURL(URL_TO_REDIRECT_AFTER_USER_LOGS_OUT));
+      userDetails.put("status_code", "200");
+    } while (result.next());
+    return userDetails;
   }
 
   /**
@@ -191,6 +193,7 @@ public class UserServlet extends HttpServlet {
     DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
 
     UserService userService = UserServiceFactory.getUserService();
+    String userResult;
     try {
       HashMap<String, String> userDetails = getUserDetails(
         pool,
@@ -198,14 +201,11 @@ public class UserServlet extends HttpServlet {
         GET_USER_ROW_QUERY,
         response
       );
-      String userResult = new Gson().toJson(userDetails);
-      response.getWriter().println(userResult);
+      userResult = new Gson().toJson(userDetails);
     } catch (SQLException ex) {
-      throw new RuntimeException(
-        "There is an error with your sql statement ... ",
-        ex
-      );
+      throw new RuntimeException("There is an error with your sql statement ... ", ex);
     }
+    response.getWriter().println(userResult);
   }
 
   /**
@@ -223,24 +223,18 @@ public class UserServlet extends HttpServlet {
     String create_new_user_query
   )
     throws SQLException {
-    try (Connection conn = pool.getConnection()) {
-      try (
-        PreparedStatement queryStatement = conn.prepareStatement(
-          create_new_user_query
-        )
-      ) {
-        String full_name = request.getParameter("full_name");
-        String user_name = request.getParameter("user_name");
-        Integer university_id = Integer.valueOf(
-          request.getParameter("university")
-        );
-        String user_email = userService.getCurrentUser().getEmail();
-        queryStatement.setString(1, user_name);
-        queryStatement.setString(2, full_name);
-        queryStatement.setString(3, user_email);
-        queryStatement.setInt(4, university_id);
-        queryStatement.execute();
-      }
+    try (
+      Connection conn = pool.getConnection();
+      PreparedStatement queryStatement = conn.prepareStatement(
+        create_new_user_query
+      )
+    ) {
+      String user_email = userService.getCurrentUser().getEmail();
+      queryStatement.setString(1, request.getParameter("user_name"));
+      queryStatement.setString(2, request.getParameter("full_name"));
+      queryStatement.setString(3, user_email);
+      queryStatement.setInt(4, Integer.valueOf(request.getParameter("university")));
+      queryStatement.execute();
     }
   }
 
@@ -256,14 +250,10 @@ public class UserServlet extends HttpServlet {
     ServletContext servletContext = getServletContext();
     DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
     UserService userService = UserServiceFactory.getUserService();
-
     try {
       saveUserDetails(pool, userService, request, CREATE_NEW_USER_QUERY);
     } catch (SQLException ex) {
-      throw new RuntimeException(
-        "There is an error with your sql statement ... ",
-        ex
-      );
+      throw new RuntimeException("There is an error with your sql statement ... ", ex);
     }
   }
 }
