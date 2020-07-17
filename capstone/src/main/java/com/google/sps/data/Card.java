@@ -18,13 +18,18 @@ public final class Card{
   private Integer id;
   private String front;
   private String back;
-  private Integer study_set_id; 
+  private Integer studySetId; 
 
-  public Card(Integer id, String infront, String inback, Integer study_set_id){
+  public Card(Integer id, String front, String back, Integer studySetId){
     this.id = id;
-    this.front = infront;
-    this.back = inback;
-    this.study_set_id = study_set_id;
+    this.front = front;
+    this.back = back;
+    this.studySetId = studySetId;
+  }
+
+  public Card(String front, String back){
+    this.front = front;
+    this.back = back;
   }
 
   public Integer getID(){
@@ -40,15 +45,15 @@ public final class Card{
    } 
   
   public Integer getStudySetId(){
-    return this.study_set_id;
+    return this.studySetId;
   }
 
-  public void setFront(String infront){
-    this.front = infront;
+  public void setFront(String front){
+    this.front = front;
   }
 
-  public void setBack(String inback){
-    this.back = inback;
+  public void setBack(String back){
+    this.back = back;
   }
     
   //For Testing Purposes Only
