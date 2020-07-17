@@ -55,7 +55,7 @@ public class StudySetServlet extends HttpServlet {
     " JOIN university ON university.id = study_set.university_id" +
     " JOIN user_info ON study_set.owner_id = user_info.id" +
     " JOIN card ON card.study_set_id = study_set.id" +
-    " WHERE  study_set.id= ?" +
+    " WHERE study_set.id = ?" +
     " GROUP BY card.id, study_set.id, university.id, user_info.id;";
 
   public ArrayList<HashMap<String, String>> runSearchStudySetSqlQuery(
