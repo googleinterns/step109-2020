@@ -17,6 +17,7 @@
 package com.google.sps.servlets;
 
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.google.sps.data.Card;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -25,7 +26,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -40,7 +45,7 @@ import javax.sql.DataSource;
 
 @WebServlet("/study_set")
 public class StudySetServlet extends HttpServlet {
-  private final String search_sql_statement = 
+  private final String search_sql_statement =
     "SELECT COUNT(card.study_set_id), study_set.id, study_set.title, study_set.description, " +
     "study_set.subject, university.name, user_info.user_name FROM study_set JOIN university " +
     "ON university.id = study_set.university_id JOIN user_info ON study_set.owner_id = user_info.id " +
@@ -61,11 +66,14 @@ public class StudySetServlet extends HttpServlet {
           search_sql_statement
         )
       ) {
-        long number_of_placeholders = search_sql_statement.chars().filter(ch -> ch == '?').count();
+        long number_of_placeholders = search_sql_statement
+          .chars()
+          .filter(ch -> ch == '?')
+          .count();
         for (int i = 1; i <= number_of_placeholders; i++) {
-            queryStatement.setString(i,  "%" + search_word + "%");
+          queryStatement.setString(i, "%" + search_word + "%");
         }
-        
+
         ResultSet result = queryStatement.executeQuery();
         while (result.next()) {
           HashMap<String, String> newEntry = new HashMap<>();
@@ -94,7 +102,7 @@ public class StudySetServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
     ServletContext servletContext = getServletContext();
-    String search_word  = request.getParameter("stringToSearchBy");
+    String search_word = request.getParameter("stringToSearchBy");
     DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
     try {
       ArrayList<HashMap<String, String>> studySets = runSqlQuery(
@@ -113,6 +121,102 @@ public class StudySetServlet extends HttpServlet {
       );
     }
   }
-  //TODO doPost for creating and storing a study set
 
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
+    throws IOException {
+    HashMap<String, Object> result_par = new Gson()
+    .fromJson(request.getReader(), HashMap.class);
+    String owner_id = result_par.get("user_id").toString();
+    String title = result_par.get("title").toString();
+    String subject = result_par.get("subject").toString();
+    String description = result_par.get("description").toString();
+    String university = result_par.get("university_id").toString();
+    String professor = result_par.get("professor").toString();
+    String academic_time = result_par.get("academic_time").toString();
+    String course_name = result_par.get("course_name").toString();
+
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    Date date = new Date();
+    String creation_time = formatter.format(date);
+    String update_time = creation_time;
+
+    ArrayList<LinkedTreeMap<String, String>> cards = (ArrayList) result_par.get(
+      "cards"
+    );
+    String studyID = "";
+
+    ServletContext servletContext = getServletContext();
+    DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
+    if (pool == null) {
+      System.err.println(
+        "Connection to SQL database not working because servlet is not conntect to the database"
+      );
+      return;
+    }
+
+    ResultSet result;
+    try (Connection conn = pool.getConnection()) {
+      String statement = String.format(
+        "INSERT INTO study_set (owner_id, title, subject, description, university_id, professor, academic_time_period, course_name, creation_time, update_time)" +
+        "Values (%1$s, '%2$s', '%3$s', '%4$s', %5$s, '%6$s', '%7$s', '%8$s', '%9$s', '%10$s');",
+        owner_id,
+        title,
+        subject,
+        description,
+        university,
+        professor,
+        academic_time,
+        course_name,
+        creation_time,
+        update_time
+      );
+      PreparedStatement updateTable = conn.prepareStatement(statement);
+      updateTable.execute();
+
+      String getStudyID = String.format(
+        "SELECT study_set.id FROM study_set WHERE study_set.owner_id = %1$s AND study_set.creation_time = '%2$s';",
+        owner_id,
+        creation_time
+      );
+      PreparedStatement studyIDStatement = conn.prepareStatement(getStudyID);
+      result = studyIDStatement.executeQuery();
+
+      while (result.next()) {
+        studyID = result.getString("id");
+      }
+      if (studyID.equals("")) {
+        System.err.println("Unable to get study_set ID");
+        return;
+      }
+      creatCard(cards, studyID, conn);
+    } catch (SQLException ex) {
+      throw new RuntimeException("Unable to verify Connection", ex);
+    }
+
+    response.sendRedirect("/createStudySet.html");
+  }
+
+  private void creatCard(
+    ArrayList<LinkedTreeMap<String, String>> cards,
+    String studyID,
+    Connection conn
+  )
+    throws SQLException {
+    for (int i = 0; i < cards.size(); ++i) {
+      String frontText = cards.get(i).get("front");
+      String backText = cards.get(i).get("back");
+      if (!frontText.equals("") && !backText.equals("")) {
+        String cardStatement = String.format(
+          "INSERT INTO CARD (study_set_id, front, back) VALUES(%1$s, '%2$S', '%3$s');",
+          studyID,
+          frontText,
+          backText
+        );
+        PreparedStatement updateCardTable = conn.prepareStatement(
+          cardStatement
+        );
+        updateCardTable.execute();
+      }
+    }
+  }
 }
