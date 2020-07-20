@@ -50,44 +50,45 @@ public class UniversityServlet extends HttpServlet {
     ServletContext servletContext = getServletContext();
     DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
 
+    ArrayList<HashMap<String, String>> universityArray = new ArrayList<HashMap<String, String>>();
     String uniArrayResult;
     try {
-      ArrayList<HashMap<String, String>> universityArray = getUniArray(
-        pool,
-        response
-      );
-      uniArrayResult = new Gson().toJson(universityArray);
+        universityArray = getUniArray(pool,response);
     } catch (SQLException ex) {
       throw new RuntimeException(
         "There is an error with your sql statement ... ",
         ex
       );
     }
+    uniArrayResult = new Gson().toJson(universityArray);
     response.getWriter().println(uniArrayResult);
   }
 
-  public ArrayList<HashMap<String, String>> getArrays(
+  public ArrayList<HashMap<String, String>> getUniArray(
     DataSource pool,
     HttpServletResponse response
   )
     throws SQLException, IOException {
-    ArrayList<HashMap<String, String>> returnArray = new ArrayList<HashMap<String, String>>();
+    ArrayList<HashMap<String, String>> uniArrayList = new ArrayList<HashMap<String, String>>();
+    ResultSet result;
+    
     try (Connection conn = pool.getConnection()) {
       String getUniTable = SEARCH_UNIVERSITY_TABLE_SQL_STATEMENT;
       PreparedStatement uniStatement = conn.prepareStatement(getUniTable);
-      ResultSet result = uniStatement.executeQuery();
+      result = uniStatement.executeQuery();
 
-      while (result.next()) {
-        HashMap<String, String> University = new HashMap<>();
-        University.put("id", result.getString("id"));
-        University.put("name", result.getString("name"););
-        University.put("state", result.getString("state"));
-        returnArray.add(University);
+       while (result.next()) {
+        HashMap<String, String> universityRow = new HashMap<>();
+        universityRow.put("id", result.getString("id"));
+        universityRow.put("name", result.getString("name"));
+        universityRow.put("state", result.getString("state"));
+        uniArrayList.add(universityRow);
       }
       
-      return returnArray;
+      return uniArrayList;
+
     } catch (SQLException ex) {
       throw new RuntimeException("Unable to verify Connection", ex);
-    }
+    }   
   }
 }
