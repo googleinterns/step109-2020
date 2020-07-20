@@ -41,7 +41,8 @@ import javax.sql.DataSource;
 
 @WebServlet("/university")
 public class UniversityServlet extends HttpServlet {
-    private static final String SEARCH_UNIVERSITY_TABLE_SQL_STATEMENT = "SELECT * FROM university;";
+  private static final String SEARCH_UNIVERSITY_TABLE_SQL_STATEMENT =
+    "SELECT * FROM university;";
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -53,7 +54,7 @@ public class UniversityServlet extends HttpServlet {
     ArrayList<HashMap<String, String>> universityArray = new ArrayList<HashMap<String, String>>();
     String uniArrayResult;
     try {
-        universityArray = getUniArray(pool,response);
+      universityArray = getUniArray(pool, response);
     } catch (SQLException ex) {
       throw new RuntimeException(
         "There is an error with your sql statement ... ",
@@ -71,24 +72,23 @@ public class UniversityServlet extends HttpServlet {
     throws SQLException, IOException {
     ArrayList<HashMap<String, String>> uniArrayList = new ArrayList<HashMap<String, String>>();
     ResultSet result;
-    
+
     try (Connection conn = pool.getConnection()) {
       String getUniTable = SEARCH_UNIVERSITY_TABLE_SQL_STATEMENT;
       PreparedStatement uniStatement = conn.prepareStatement(getUniTable);
       result = uniStatement.executeQuery();
 
-       while (result.next()) {
+      while (result.next()) {
         HashMap<String, String> universityRow = new HashMap<>();
         universityRow.put("id", result.getString("id"));
         universityRow.put("name", result.getString("name"));
         universityRow.put("state", result.getString("state"));
         uniArrayList.add(universityRow);
       }
-      
-      return uniArrayList;
 
+      return uniArrayList;
     } catch (SQLException ex) {
       throw new RuntimeException("Unable to verify Connection", ex);
-    }   
+    }
   }
 }
