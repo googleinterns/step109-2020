@@ -56,10 +56,7 @@ public class UniversityServlet extends HttpServlet {
     try {
       universityArray = getUniArray(pool, response);
     } catch (SQLException ex) {
-      throw new RuntimeException(
-        "There is an error with your sql statement ... ",
-        ex
-      );
+      throw new RuntimeException("There is an error with your sql statement ... ", ex);
     }
     uniArrayResult = new Gson().toJson(universityArray);
     response.getWriter().println(uniArrayResult);
@@ -74,8 +71,7 @@ public class UniversityServlet extends HttpServlet {
     ResultSet result;
 
     try (Connection conn = pool.getConnection()) {
-      String getUniTable = SEARCH_UNIVERSITY_TABLE_SQL_STATEMENT;
-      PreparedStatement uniStatement = conn.prepareStatement(getUniTable);
+      PreparedStatement uniStatement = conn.prepareStatement(SEARCH_UNIVERSITY_TABLE_SQL_STATEMENT);
       result = uniStatement.executeQuery();
 
       while (result.next()) {
