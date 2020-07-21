@@ -53,6 +53,16 @@ public class StudySetServlet extends HttpServlet {
     "study_set.title ILIKE ? OR study_set.description ILIKE ? OR user_info.user_name ILIKE ? " +
     "GROUP BY study_set.id, university.id, user_info.id";
 
+  private final String INSERT_CARD_STATEMENT =
+    "INSERT INTO CARD (study_set_id, front, back) VALUES(%1$s, '%2$S', '%3$s');";
+
+  private final String INSERT_STUDY_SET_STATEMENT =
+    "INSERT INTO study_set (owner_id, title, subject, description, university_id, professor, academic_time_period, course_name, creation_time, update_time)" +
+    "Values (%1$s, '%2$s', '%3$s', '%4$s', %5$s, '%6$s', '%7$s', '%8$s', '%9$s', '%10$s');";
+
+  private final String GET_STUDY_ID_STATEMENT =
+    "SELECT study_set.id FROM study_set WHERE study_set.owner_id = %1$s AND study_set.creation_time = '%2$s';";
+
   public ArrayList<HashMap<String, String>> runSqlQuery(
     DataSource pool,
     String search_sql_statement,
@@ -154,11 +164,67 @@ public class StudySetServlet extends HttpServlet {
       return;
     }
 
-    ResultSet result;
+    createRow(
+      owner_id,
+      title,
+      subject,
+      description,
+      university,
+      professor,
+      academic_time,
+      course_name,
+      creation_time,
+      update_time,
+      studyID,
+      pool,
+      cards
+    );
+
+    response.sendRedirect("/createStudySet.html");
+  }
+
+  private void createCard(
+    ArrayList<LinkedTreeMap<String, String>> cards,
+    String studyID,
+    Connection conn
+  )
+    throws SQLException {
+    for (int i = 0; i < cards.size(); ++i) {
+      String frontText = cards.get(i).get("front");
+      String backText = cards.get(i).get("back");
+      if (!frontText.equals("") && !backText.equals("")) {
+        String cardStatement = String.format(
+          INSERT_CARD_STATEMENT,
+          studyID,
+          frontText,
+          backText
+        );
+        PreparedStatement updateCardTable = conn.prepareStatement(
+          cardStatement
+        );
+        updateCardTable.execute();
+      }
+    }
+  }
+
+  private void createRow(
+    String owner_id,
+    String title,
+    String subject,
+    String description,
+    String university,
+    String professor,
+    String academic_time,
+    String course_name,
+    String creation_time,
+    String update_time,
+    String studyID,
+    DataSource pool,
+    ArrayList<LinkedTreeMap<String, String>> cards
+  ) {
     try (Connection conn = pool.getConnection()) {
       String statement = String.format(
-        "INSERT INTO study_set (owner_id, title, subject, description, university_id, professor, academic_time_period, course_name, creation_time, update_time)" +
-        "Values (%1$s, '%2$s', '%3$s', '%4$s', %5$s, '%6$s', '%7$s', '%8$s', '%9$s', '%10$s');",
+        INSERT_STUDY_SET_STATEMENT,
         owner_id,
         title,
         subject,
@@ -174,12 +240,12 @@ public class StudySetServlet extends HttpServlet {
       updateTable.execute();
 
       String getStudyID = String.format(
-        "SELECT study_set.id FROM study_set WHERE study_set.owner_id = %1$s AND study_set.creation_time = '%2$s';",
+        GET_STUDY_ID_STATEMENT,
         owner_id,
         creation_time
       );
       PreparedStatement studyIDStatement = conn.prepareStatement(getStudyID);
-      result = studyIDStatement.executeQuery();
+      ResultSet result = studyIDStatement.executeQuery();
 
       while (result.next()) {
         studyID = result.getString("id");
@@ -188,35 +254,9 @@ public class StudySetServlet extends HttpServlet {
         System.err.println("Unable to get study_set ID");
         return;
       }
-      creatCard(cards, studyID, conn);
+      createCard(cards, studyID, conn);
     } catch (SQLException ex) {
       throw new RuntimeException("Unable to verify Connection", ex);
-    }
-
-    response.sendRedirect("/createStudySet.html");
-  }
-
-  private void creatCard(
-    ArrayList<LinkedTreeMap<String, String>> cards,
-    String studyID,
-    Connection conn
-  )
-    throws SQLException {
-    for (int i = 0; i < cards.size(); ++i) {
-      String frontText = cards.get(i).get("front");
-      String backText = cards.get(i).get("back");
-      if (!frontText.equals("") && !backText.equals("")) {
-        String cardStatement = String.format(
-          "INSERT INTO CARD (study_set_id, front, back) VALUES(%1$s, '%2$S', '%3$s');",
-          studyID,
-          frontText,
-          backText
-        );
-        PreparedStatement updateCardTable = conn.prepareStatement(
-          cardStatement
-        );
-        updateCardTable.execute();
-      }
     }
   }
 }

@@ -33,36 +33,36 @@
     </nav>
 
     <div class="row">
-      <div class="col s4 left-align teal lighten-4 z-depth-3">
+      <div class="col s4 left-align teal lighten-4 z-depth-3 create-box">
         <p class="flow-text white-text">First Step to Create Study Set</p>
 
         <div class="input-field col s12">
-          <input type="text" id="user_id" name="user_id" />
+          <input type="text" id="user_id" name="user_id" required/>
           <label for="user_id">User ID:</label>
         </div>
 
         <div class="input-field col s12">
-          <input type="text" id="title" name="title" />
+          <input type="text" id="title" name="title" required/>
           <label for="title">title:</label>
         </div>
 
         <div class="input-field col s12">
-          <input type="text" id="subject" name="subject" />
+          <input type="text" id="subject" name="subject" required/>
           <label for="subject">Subject:</label>
         </div>
 
         <div class="input-field col s12">
-          <input type="text" id="description" name="description" />
+          <input type="text" id="description" name="description" required/>
           <label for="description">Description:</label>
         </div>
 
         <div class="input-field col s12">
-          <input type="text" id="university_id" name="university_id" />
+          <input type="text" id="university_id" name="university_id" required/>
           <label for="university_id">University ID:</label>
         </div>
 
         <div class="input-field col s12">
-          <input type="text" id="professor" name="professor" />
+          <input type="text" id="professor" name="professor" required/>
           <label for="professor">Professor:</label>
         </div>
 
@@ -72,12 +72,13 @@
             id="academic_time"
             name="academic_time"
             placeholder="Example: Fall 2020"
+            required
           />
           <label for="academic_time">Academic Time:</label>
         </div>
 
         <div class="input-field col s12">
-          <input type="text" id="course_name" name="course_name" />
+          <input type="text" id="course_name" name="course_name" required/>
           <label for="course_name">Course Name:</label>
         </div>
       </div>
