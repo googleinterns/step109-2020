@@ -29,13 +29,14 @@ function configureSearchResponseToHTML(studySets) {
   }
 
   for (var studySet of studySets) {
-    configuredStudySetInfoCards += formatCardInHTML(studySet);
+    configuredStudySetInfoCards += formatInfoCardInHTML(studySet);
   }
   return configuredStudySetInfoCards;
 }
 
-function  formatCardInHTML(studySet) { 
-  return `<a href="/viewStudySet.html?id=${studySet.id}" class="result-card">
+function formatInfoCardInHTML(studySet) {
+  return `
+    <a href="/viewStudySet.html?id=${studySet.id}" class="result-card">
       <div class="row result-card"> 
         <div class="col card s12 m12 l12">
           <div class="top-line">
@@ -47,5 +48,97 @@ function  formatCardInHTML(studySet) {
           <span> By  ${studySet.user_author} from ${studySet.university}</span>
          </div>
       </div>
-    </a>`;
+   </a>`;
+}
+
+//View Study Set
+async function loadStudySetToPage() {
+  var urlParams = new URLSearchParams(window.location.search);
+  const studySetId = urlParams.get("id");
+  const response = await fetch("/study_set/" + studySetId);
+  const studySet = await response.json();
+
+  document.getElementById(
+    "studySetDirectory-container"
+  ).innerHTML = configureStudySetCardDirectoryHTML(studySet.cards);
+
+  document.getElementById(
+    "studySetDetails-container"
+  ).innerHTML = configureStudySetDetailsHTML(studySet);
+
+  document.getElementById(
+    "allCards-container"
+  ).innerHTML = configureAllCardsHTML(studySet.cards);
+}
+
+function configureStudySetCardDirectoryHTML(cards) {
+  var configuredCardList = "";
+  for (var card of cards) {
+    configuredCardList += `
+    <li class="truncate">
+      <a onclick="displayCard('${ card.front}', '${card.back}')" class="btn-flat">
+        ${card.front.toUpperCase()}
+      </a>
+    </li>`;
+  }
+  return ` <ul> ${configuredCardList} </ul>`;
+}
+
+function displayCard(front, back) {
+  document.getElementById("card-container").innerHTML = formatSelectedCard(
+    front,
+    back
+  );
+}
+
+function formatSelectedCard(front, back) {
+  return `  
+    <div class="card activator large">
+      <div class="card-content activator">
+        <span class="card-title activator">${front}</span>
+      </div>
+      <div class="card-reveal">
+        <span class="card-title">${front}<i class="material-icons right">close</i></span>
+        <p>${back}</p>
+      </div>
+    </div>`;
+}
+function configureStudySetDetailsHTML(studySet) {
+  var configuredStudySetDetails = "";
+  configuredStudySetDetails += formatStudySetDetailsInHTML(studySet);
+  return configuredStudySetDetails;
+}
+
+function formatStudySetDetailsInHTML(studySet) {
+  return `
+    <h3>${studySet.title.toUpperCase()}</h3>
+    <span>
+      ${studySet.subject}<br>
+      ${studySet.description}<br>
+      by ${studySet.user_author} from ${studySet.university}
+    </span>`;
+}
+
+function configureAllCardsHTML(cards) {
+  var configuredStudySetCards = "";
+  for (var card of cards) {
+    configuredStudySetCards += ` 
+    <li class="card">
+      <div class="row">
+        <div class="col s12 m4 offset-m1 front">${card.front}</div>
+        <div class="col s12 m6 offset-m1 back">${card.back}</div>
+      </div>
+    </li>`;
+  }
+  return ` <ul>${configuredStudySetCards}</ul>`;
+}
+
+function showAllButton() {
+  var allCardsContainer = document.getElementById("allCards-container");
+  if (allCardsContainer.style.display == "none") {
+    allCardsContainer.style.display = "block";
+  } 
+  else {
+    allCardsContainer.style.display = "none";
+  }
 }
