@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.ArrayList;
@@ -45,8 +46,6 @@ import javax.sql.DataSource;
 
 @WebServlet(urlPatterns = { "/study_set/*" })
 public class StudySetServlet extends HttpServlet {
-
-    
   private final String SEARCH_SQL_STATEMENT =
     "SELECT COUNT(card.study_set_id), study_set.id, study_set.title, study_set.description, " +
     "study_set.subject, university.name, user_info.user_name FROM study_set JOIN university " +
@@ -55,16 +54,15 @@ public class StudySetServlet extends HttpServlet {
     "study_set.title ILIKE ? OR study_set.description ILIKE ? OR user_info.user_name ILIKE ? " +
     "GROUP BY study_set.id, university.id, user_info.id";
 
-
   private final String INSERT_CARD_STATEMENT =
-    "INSERT INTO CARD (study_set_id, front, back) VALUES(%1$s, '%2$S', '%3$s');";
+    "INSERT INTO CARD (study_set_id, front, back) VALUES(?, ?, ?);";
 
   private final String INSERT_STUDY_SET_STATEMENT =
     "INSERT INTO study_set (owner_id, title, subject, description, university_id, professor, academic_time_period, course_name, creation_time, update_time)" +
-    "Values (%1$s, '%2$s', '%3$s', '%4$s', %5$s, '%6$s', '%7$s', '%8$s', '%9$s', '%10$s');";
+    "Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
   private final String GET_STUDY_ID_STATEMENT =
-    "SELECT study_set.id FROM study_set WHERE study_set.owner_id = %1$s AND study_set.creation_time = '%2$s';";
+    "SELECT study_set.id FROM study_set WHERE study_set.owner_id = ? AND study_set.creation_time = ?;";
 
   private final String VIEW_STUDY_SET_QUERY =
     " SELECT card.front, card.back, study_set.title, study_set.description, study_set.subject, university.name, user_info.user_name " +
@@ -191,25 +189,24 @@ public class StudySetServlet extends HttpServlet {
     String requestResultJSON = gson.toJson(getRequestResult(request));
     response.getWriter().println(requestResultJSON);
   }
-  //TODO doPost for creating and storing a study set
 
   public void doPost(HttpServletRequest request, HttpServletResponse response)
     throws IOException {
     HashMap<String, Object> result_par = new Gson()
     .fromJson(request.getReader(), HashMap.class);
-    String owner_id = result_par.get("user_id").toString();
+    String ownderID = result_par.get("user_id").toString();
     String title = result_par.get("title").toString();
     String subject = result_par.get("subject").toString();
     String description = result_par.get("description").toString();
     String university = result_par.get("university_id").toString();
     String professor = result_par.get("professor").toString();
-    String academic_time = result_par.get("academic_time").toString();
-    String course_name = result_par.get("course_name").toString();
+    String academicTime = result_par.get("academic_time").toString();
+    String courseName = result_par.get("course_name").toString();
 
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Date date = new Date();
-    String creation_time = formatter.format(date);
-    String update_time = creation_time;
+    String creationTime = formatter.format(date);
+    Timestamp creationTimestamp = Timestamp.valueOf(creationTime);
 
     ArrayList<LinkedTreeMap<String, String>> cards = (ArrayList) result_par.get(
       "cards"
@@ -226,16 +223,15 @@ public class StudySetServlet extends HttpServlet {
     }
 
     createRow(
-      owner_id,
+      ownderID,
       title,
       subject,
       description,
       university,
       professor,
-      academic_time,
-      course_name,
-      creation_time,
-      update_time,
+      academicTime,
+      courseName,
+      creationTimestamp,
       studyID,
       pool,
       cards
@@ -254,58 +250,58 @@ public class StudySetServlet extends HttpServlet {
       String frontText = cards.get(i).get("front");
       String backText = cards.get(i).get("back");
       if (!frontText.equals("") && !backText.equals("")) {
-        String cardStatement = String.format(
-          INSERT_CARD_STATEMENT,
-          studyID,
-          frontText,
-          backText
-        );
         PreparedStatement updateCardTable = conn.prepareStatement(
-          cardStatement
+          INSERT_CARD_STATEMENT
         );
+
+        updateCardTable.setInt(1, Integer.parseInt(studyID));
+        updateCardTable.setString(2, frontText);
+        updateCardTable.setString(3, backText);
+
         updateCardTable.execute();
       }
     }
   }
 
   private void createRow(
-    String owner_id,
+    String ownderID,
     String title,
     String subject,
     String description,
     String university,
     String professor,
-    String academic_time,
-    String course_name,
-    String creation_time,
-    String update_time,
+    String academicTime,
+    String courseName,
+    Timestamp creationTimestamp,
     String studyID,
     DataSource pool,
     ArrayList<LinkedTreeMap<String, String>> cards
   ) {
     try (Connection conn = pool.getConnection()) {
-      String statement = String.format(
-        INSERT_STUDY_SET_STATEMENT,
-        owner_id,
-        title,
-        subject,
-        description,
-        university,
-        professor,
-        academic_time,
-        course_name,
-        creation_time,
-        update_time
+      PreparedStatement updateTable = conn.prepareStatement(
+        INSERT_STUDY_SET_STATEMENT
       );
-      PreparedStatement updateTable = conn.prepareStatement(statement);
+
+      updateTable.setInt(1, Integer.parseInt(ownderID));
+      updateTable.setString(2, title);
+      updateTable.setString(3, subject);
+      updateTable.setString(4, description);
+      updateTable.setInt(5, Integer.parseInt(university));
+      updateTable.setString(6, professor);
+      updateTable.setString(7, academicTime);
+      updateTable.setString(8, courseName);
+      updateTable.setTimestamp(9, creationTimestamp);
+      updateTable.setTimestamp(10, creationTimestamp);
+
       updateTable.execute();
 
-      String getStudyID = String.format(
-        GET_STUDY_ID_STATEMENT,
-        owner_id,
-        creation_time
+      PreparedStatement studyIDStatement = conn.prepareStatement(
+        GET_STUDY_ID_STATEMENT
       );
-      PreparedStatement studyIDStatement = conn.prepareStatement(getStudyID);
+
+      studyIDStatement.setInt(1, Integer.parseInt(ownderID));
+      studyIDStatement.setTimestamp(2, creationTimestamp);
+
       ResultSet result = studyIDStatement.executeQuery();
 
       while (result.next()) {
