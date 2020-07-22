@@ -51,8 +51,8 @@ public class UserServlet extends HttpServlet {
   private final String CREATE_NEW_USER_QUERY =
     "INSERT INTO user_info (user_name, full_name, email, verified, university_id) VALUES (?, ?, ?, true, ?)";
 
-  private final String URL_TO_REDIRECT_AFTER_USER_LOGS_OUT = "";
-  private final String URL_TO_REDIRECT_AFTER_USER_LOGS_IN = "";
+  private final String URL_TO_REDIRECT_AFTER_USER_LOGS_OUT = "/";
+  private final String URL_TO_REDIRECT_AFTER_USER_LOGS_IN = "/users?query_source=server";
 
   /**
    * This method gets the related information associated with a user based on the email provided by the userService parameter.
@@ -66,7 +66,8 @@ public class UserServlet extends HttpServlet {
     DataSource pool,
     UserService userService,
     String get_user_row_query,
-    HttpServletResponse response
+    HttpServletResponse response,
+    HttpServletRequest request
   )
     throws SQLException, IOException {
     HashMap<String, String> userDetails = new HashMap<>();
@@ -83,7 +84,8 @@ public class UserServlet extends HttpServlet {
       pool,
       userService,
       get_user_row_query,
-      response
+      response,
+      request
     );
   }
 
@@ -99,12 +101,17 @@ public class UserServlet extends HttpServlet {
     DataSource pool,
     UserService userService,
     String get_user_row_query,
-    HttpServletResponse response
+    HttpServletResponse response,
+    HttpServletRequest request
   )
     throws SQLException, IOException {
     HashMap<String, String> userDetails = new HashMap<>();
     String email = userService.getCurrentUser().getEmail();
     if (!email.endsWith(".edu")) {
+        if (request.getParameter("query_source").equals("server")) {
+            response.sendRedirect("/invalidEmail.html");
+            return userDetails;
+      }
       userDetails.put("status_code", "412");
       userDetails.put("logoutUrl", userService.createLogoutURL(URL_TO_REDIRECT_AFTER_USER_LOGS_OUT));
       return userDetails;
@@ -113,7 +120,8 @@ public class UserServlet extends HttpServlet {
       pool,
       userService,
       get_user_row_query,
-      response
+      response,
+      request
     );
   }
 
@@ -129,7 +137,8 @@ public class UserServlet extends HttpServlet {
     DataSource pool,
     UserService userService,
     String get_user_row_query,
-    HttpServletResponse response
+    HttpServletResponse response,
+    HttpServletRequest request
   )
     throws SQLException, IOException {
     HashMap<String, String> userDetails = new HashMap<>();
@@ -137,18 +146,20 @@ public class UserServlet extends HttpServlet {
     Boolean isUserLoggedIn = userService.isUserLoggedIn();
     try (
       Connection conn = pool.getConnection();
-      PreparedStatement queryStatement = conn.prepareStatement(
-        get_user_row_query
-      )
+      PreparedStatement queryStatement = conn.prepareStatement(get_user_row_query)
     ) {
       queryStatement.setString(1, email);
       ResultSet result = queryStatement.executeQuery();
       if (result.next() == false) {
-        response.sendRedirect("/userDetails.html");
+        if (request.getParameter("query_source").equals("server")) {
+            response.sendRedirect("/initialLogin.html");
+            return userDetails;
+        }
         userDetails.put("status_code", "307");
+        userDetails.put("email", email);
         return userDetails;
       }
-      return retrieveExistingUserInfo(result, userService);
+      return retrieveExistingUserInfo(result, userService, response, request);
     }
   }
 
@@ -160,12 +171,18 @@ public class UserServlet extends HttpServlet {
    */
   public HashMap<String, String> retrieveExistingUserInfo(
     ResultSet result,
-    UserService userService
+    UserService userService,
+    HttpServletResponse response,
+    HttpServletRequest request
   )
     throws SQLException, IOException {
     HashMap<String, String> userDetails = new HashMap<>();
     String email = userService.getCurrentUser().getEmail();
     Boolean isUserLoggedIn = userService.isUserLoggedIn();
+    if (request.getParameter("query_source").equals("server")) {
+        response.sendRedirect("/dashboard.html");
+        return userDetails;
+    }
     do {
       userDetails.put("user_status", Boolean.toString(isUserLoggedIn));
       userDetails.put("id", Integer.toString(result.getInt("id")));
@@ -199,13 +216,39 @@ public class UserServlet extends HttpServlet {
         pool,
         userService,
         GET_USER_ROW_QUERY,
-        response
+        response,
+        request
       );
       userResult = new Gson().toJson(userDetails);
     } catch (SQLException ex) {
       throw new RuntimeException("There is an error with your sql statement ... ", ex);
     }
     response.getWriter().println(userResult);
+  }
+
+  /**
+   * This method checks if the university's id sent by client exists in our database.
+   * @param pool It is a DataSource object that serves to interact with our database connection.
+   * @param userService This is a UserService object that holds information about the current user.
+   * @param result_parameters HashMap object of the parameter values retrieved from the request.
+   * @return Boolean
+   */
+  public Boolean checkUniversityIdExists 
+  (DataSource pool, UserService userService, HttpServletResponse response, HashMap<String, String> result_parameters) 
+  throws SQLException, IOException {
+      Integer university_id = Integer.parseInt(result_parameters.get("university"));
+      try(
+          Connection conn = pool.getConnection();
+          PreparedStatement queryStatement = conn.prepareStatement("SELECT * FROM university WHERE university.id = ?")
+      ) {
+          queryStatement.setInt(1, university_id);
+          ResultSet result = queryStatement.executeQuery();
+          if (result.next() == false) {
+            response.sendError(403, "University's id sent by client does not exist.");
+            return false;
+            }      
+        }
+        return true;
   }
 
   /**
@@ -219,22 +262,23 @@ public class UserServlet extends HttpServlet {
   public void saveUserDetails(
     DataSource pool,
     UserService userService,
-    HttpServletRequest request,
+    HashMap<String, String> result_parameters,
     String create_new_user_query
   )
     throws SQLException {
+    
     try (
       Connection conn = pool.getConnection();
       PreparedStatement queryStatement = conn.prepareStatement(
         create_new_user_query
       )
     ) {
-      String user_email = userService.getCurrentUser().getEmail();
-      queryStatement.setString(1, request.getParameter("user_name"));
-      queryStatement.setString(2, request.getParameter("full_name"));
-      queryStatement.setString(3, user_email);
-      queryStatement.setInt(4, Integer.valueOf(request.getParameter("university")));
-      queryStatement.execute();
+        String user_email = userService.getCurrentUser().getEmail();
+        queryStatement.setString(1, result_parameters.get("user_name"));
+        queryStatement.setString(2, result_parameters.get("full_name"));
+        queryStatement.setString(3, user_email);
+        queryStatement.setInt(4, Integer.parseInt(result_parameters.get("university")));
+        queryStatement.execute();
     }
   }
 
@@ -247,13 +291,27 @@ public class UserServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
     throws IOException {
+    response.setContentType("application/json");
     ServletContext servletContext = getServletContext();
     DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
     UserService userService = UserServiceFactory.getUserService();
+    HashMap<String, String> result_parameters = new Gson().fromJson(request.getReader(), HashMap.class);
+    Boolean isUniversityIdValid;
+    HashMap<String, String> result = new HashMap<>();
     try {
-      saveUserDetails(pool, userService, request, CREATE_NEW_USER_QUERY);
-    } catch (SQLException ex) {
-      throw new RuntimeException("There is an error with your sql statement ... ", ex);
+        isUniversityIdValid =  checkUniversityIdExists(pool, userService, response, result_parameters);
+    } catch(SQLException ex) {
+        throw new RuntimeException("There is an error with your sql statement ... ", ex);
     }
+    if (isUniversityIdValid) {
+        try {
+        saveUserDetails(pool, userService, result_parameters, CREATE_NEW_USER_QUERY);
+        result.put("status-code", "200");
+        } catch (SQLException ex) {
+            throw new RuntimeException("There is an error with your sql statement ... ", ex);
+        }
+    }
+    String resultToJson = new Gson().toJson(result);
+    response.getWriter().println(resultToJson);
   }
 }
