@@ -175,7 +175,7 @@ div.top-wrapper {
   height: auto;
 }
 
-#studySetDirectory-container {
+#study-set-directory-container {
   margin-top: 40px;
   margin-bottom: 50px;
   background-color: #5ab8bf;
@@ -186,18 +186,18 @@ div.top-wrapper {
     0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
 }
 
-#studySetDirectory-container a.btn-flat {
+#study-set-directory-container a.btn-flat {
   font-weight: 200;
   font-size: 15.5px;
   line-height: 2;
   color: #c2e5e7;
 }
 
-#studySetDirectory-container a.btn-flat:hover {
+#study-set-directory-container a.btn-flat:hover {
   background-color: #c4e6e8;
   color: #59b9bf;
 }
-#studySetDirectory-container a.btn-flat {
+#study-set-directory-container a.btn-flat {
   color: #fcfefe;
 }
 
@@ -229,7 +229,7 @@ div.card div.card-reveal {
   font-weight: 200;
 }
 
-#studySetDetails-container {
+#study-set-details-container {
   background-color: #58babf;
   color: #efeff0;
   font-weight: 200;
@@ -261,18 +261,18 @@ div.btn-container a.btn:hover {
   color: #58bbbf;
 }
 
-#allCards-container {
+#all-cards-container {
   background-color: #58bbbf;
   display: none;
 }
 
-div.allCards {
+div.all-cards {
   background-color: #a8dcdeb3;
   width: 100%;
   text-align: center;
 }
 
-#allCards-container li.card {
+#all-cards-container li.card {
   color: #373532;
   background-color: #efe2bb;
   margin-top: 20px;

@@ -59,15 +59,15 @@ async function loadStudySetToPage() {
   const studySet = await response.json();
 
   document.getElementById(
-    "studySetDirectory-container"
+    "study-set-directory-container"
   ).innerHTML = configureStudySetCardDirectoryHTML(studySet.cards);
 
   document.getElementById(
-    "studySetDetails-container"
+    "study-set-details-container"
   ).innerHTML = configureStudySetDetailsHTML(studySet);
 
   document.getElementById(
-    "allCards-container"
+    "all-cards-container"
   ).innerHTML = configureAllCardsHTML(studySet.cards);
 }
 
@@ -134,7 +134,7 @@ function configureAllCardsHTML(cards) {
 }
 
 function showAllButton() {
-  var allCardsContainer = document.getElementById("allCards-container");
+  var allCardsContainer = document.getElementById("all-cards-container");
   if (allCardsContainer.style.display == "none") {
     allCardsContainer.style.display = "block";
   } 
