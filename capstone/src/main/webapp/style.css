@@ -83,7 +83,7 @@ div.search {
   background-color: #c2e5e7c7;
 }
 
-div.search input.searchTerm {
+div.search input.search-term {
   width: 100%;
   border-bottom: 1px solid #5ab8bf;
   border-right: none;
@@ -96,16 +96,16 @@ div.search input.searchTerm {
   font-weight: 400;
 }
 
-input.searchTerm::placeholder {
+input.search-term::placeholder {
   color: #fff;
 }
 
-input.searchTerm:focus {
+input.search-term:focus {
   color: #ffffff;
   background-color: #c0c0c07a;
 }
 
-button.searchButton {
+button.search-button {
   width: 40px;
   height: 36px;
   border: none;
@@ -116,7 +116,7 @@ button.searchButton {
   cursor: pointer;
 }
 
-button.searchButton:hover {
+button.search-button:hover {
   background-color: #c4e6e8;
   color: #59b9bf;
 }
