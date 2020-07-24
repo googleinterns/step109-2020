@@ -54,12 +54,12 @@ public class StudySetServlet extends HttpServlet {
     "study_set.title ILIKE ? OR study_set.description ILIKE ? OR user_info.user_name ILIKE ? " +
     "GROUP BY study_set.id, university.id, user_info.id";
 
-  private final String INSERT_CARD_STATEMENT =
-    "INSERT INTO CARD (study_set_id, front, back) VALUES(?, ?, ?);";
+  private String insertCardStatement =
+    "INSERT INTO CARD (study_set_id, front, back) VALUES";
 
   private final String INSERT_STUDY_SET_STATEMENT =
     "INSERT INTO study_set (owner_id, title, subject, description, university_id, professor, academic_time_period, course_name, creation_time, update_time)" +
-    "Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    "Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) Returning id;";
 
   private final String GET_STUDY_ID_STATEMENT =
     "SELECT study_set.id FROM study_set WHERE study_set.owner_id = ? AND study_set.creation_time = ?;";
@@ -192,26 +192,40 @@ public class StudySetServlet extends HttpServlet {
 
   public void doPost(HttpServletRequest request, HttpServletResponse response)
     throws IOException {
-    HashMap<String, Object> result_par = new Gson()
+    HashMap<String, Object> resultsParams = new Gson()
     .fromJson(request.getReader(), HashMap.class);
-    String ownderID = result_par.get("user_id").toString();
-    String title = result_par.get("title").toString();
-    String subject = result_par.get("subject").toString();
-    String description = result_par.get("description").toString();
-    String university = result_par.get("university_id").toString();
-    String professor = result_par.get("professor").toString();
-    String academicTime = result_par.get("academic_time").toString();
-    String courseName = result_par.get("course_name").toString();
+    String ownerID = resultsParams.get("user_id").toString(); // This will be replaced in next PR
+    String title = resultsParams.get("title").toString();
+    String subject = resultsParams.get("subject").toString();
+    String description = resultsParams.get("description").toString();
+    String university = resultsParams.get("university_id").toString();
+    String professor = resultsParams.get("professor").toString();
+    String academicTime = resultsParams.get("academic_time").toString();
+    String courseName = resultsParams.get("course_name").toString();
 
-    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Date date = new Date();
-    String creationTime = formatter.format(date);
-    Timestamp creationTimestamp = Timestamp.valueOf(creationTime);
+    Timestamp creationTimestamp = new Timestamp(date.getTime());
 
-    ArrayList<LinkedTreeMap<String, String>> cards = (ArrayList) result_par.get(
+    ArrayList<LinkedTreeMap<String, String>> cards = (ArrayList) resultsParams.get(
       "cards"
     );
-    String studyID = "";
+
+    if (
+      !areFieldsFilled(
+        ownerID,
+        title,
+        subject,
+        description,
+        university,
+        professor,
+        academicTime,
+        courseName,
+        cards
+      )
+    ) {
+      System.err.println("Data fields are not completely filled in.");
+      return;
+    }
 
     ServletContext servletContext = getServletContext();
     DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
@@ -223,7 +237,7 @@ public class StudySetServlet extends HttpServlet {
     }
 
     createRow(
-      ownderID,
+      ownerID,
       title,
       subject,
       description,
@@ -232,7 +246,6 @@ public class StudySetServlet extends HttpServlet {
       academicTime,
       courseName,
       creationTimestamp,
-      studyID,
       pool,
       cards
     );
@@ -246,25 +259,23 @@ public class StudySetServlet extends HttpServlet {
     Connection conn
   )
     throws SQLException {
+    PreparedStatement updateCardTable = conn.prepareStatement(
+      insertCardString(cards, insertCardStatement)
+    );
     for (int i = 0; i < cards.size(); ++i) {
       String frontText = cards.get(i).get("front");
       String backText = cards.get(i).get("back");
-      if (!frontText.equals("") && !backText.equals("")) {
-        PreparedStatement updateCardTable = conn.prepareStatement(
-          INSERT_CARD_STATEMENT
-        );
 
-        updateCardTable.setInt(1, Integer.parseInt(studyID));
-        updateCardTable.setString(2, frontText);
-        updateCardTable.setString(3, backText);
-
-        updateCardTable.execute();
-      }
+      updateCardTable.setInt((i * 3) + 1, Integer.parseInt(studyID));
+      updateCardTable.setString((i * 3) + 2, frontText);
+      updateCardTable.setString((i * 3) + 3, backText);
     }
+
+    updateCardTable.execute();
   }
 
   private void createRow(
-    String ownderID,
+    String ownerID,
     String title,
     String subject,
     String description,
@@ -273,7 +284,6 @@ public class StudySetServlet extends HttpServlet {
     String academicTime,
     String courseName,
     Timestamp creationTimestamp,
-    String studyID,
     DataSource pool,
     ArrayList<LinkedTreeMap<String, String>> cards
   ) {
@@ -282,7 +292,7 @@ public class StudySetServlet extends HttpServlet {
         INSERT_STUDY_SET_STATEMENT
       );
 
-      updateTable.setInt(1, Integer.parseInt(ownderID));
+      updateTable.setInt(1, Integer.parseInt(ownerID));
       updateTable.setString(2, title);
       updateTable.setString(3, subject);
       updateTable.setString(4, description);
@@ -293,27 +303,67 @@ public class StudySetServlet extends HttpServlet {
       updateTable.setTimestamp(9, creationTimestamp);
       updateTable.setTimestamp(10, creationTimestamp);
 
-      updateTable.execute();
+      ResultSet resultStudySet = updateTable.executeQuery();
 
-      PreparedStatement studyIDStatement = conn.prepareStatement(
-        GET_STUDY_ID_STATEMENT
-      );
-
-      studyIDStatement.setInt(1, Integer.parseInt(ownderID));
-      studyIDStatement.setTimestamp(2, creationTimestamp);
-
-      ResultSet result = studyIDStatement.executeQuery();
-
-      while (result.next()) {
-        studyID = result.getString("id");
+      String studyID = "";
+      while (resultStudySet.next()) {
+        studyID = resultStudySet.getString("id");
       }
-      if (studyID.equals("")) {
-        System.err.println("Unable to get study_set ID");
-        return;
-      }
+
       createCard(cards, studyID, conn);
     } catch (SQLException ex) {
       throw new RuntimeException("Unable to verify Connection", ex);
+    }
+  }
+
+  private String insertCardString(
+    ArrayList<LinkedTreeMap<String, String>> cards,
+    String insertStatement
+  ) {
+    String fullInsertStatement = insertStatement;
+
+    for (int i = 0; i < cards.size(); ++i) {
+      if (i > 0) {
+        fullInsertStatement += ", ";
+      }
+      fullInsertStatement += "(?, ?, ?)";
+    }
+    fullInsertStatement += ";";
+
+    return fullInsertStatement;
+  }
+
+  private void areFieldsFilled(
+    String ownerID,
+    String title,
+    String subject,
+    String description,
+    String university,
+    String professor,
+    String academicTime,
+    String courseName,
+    ArrayList<LinkedTreeMap<String, String>> cards
+  ) {
+    if (
+      ownerID.isEmpty() ||
+      title.isEmpty() ||
+      subject.isEmpty() ||
+      description.isEmpty() ||
+      university.isEmpty() ||
+      professor.isEmpty() ||
+      academicTime.isEmpty()
+    ) {
+      return false;
+    }
+    for (int i = 0; i < cards.size(); ++i) {
+      String frontText = cards.get(i).get("front");
+      String backText = cards.get(i).get("back");
+
+      if (frontText.isEmpty() || backText.isEmpty()) {
+        return false;
+      }
+
+      return true;
     }
   }
 }
