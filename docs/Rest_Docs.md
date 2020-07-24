@@ -106,3 +106,16 @@ Dashboard.html calls -->/users/id#
 	favorite_number: #
 ```
 
+## Finding University
+/university → GET request.
+```
+[
+    {
+        "id": int,
+        "name": string,
+        "state": string,
+    }, ... 
+]
+```
+
+
