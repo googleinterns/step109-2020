@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.util.Collections;
 
 @WebServlet(urlPatterns = { "/study_set/*" })
 public class StudySetServlet extends HttpServlet {
@@ -54,7 +55,7 @@ public class StudySetServlet extends HttpServlet {
     "study_set.title ILIKE ? OR study_set.description ILIKE ? OR user_info.user_name ILIKE ? " +
     "GROUP BY study_set.id, university.id, user_info.id";
 
-  private String insertCardStatement =
+  private final String  INSERT_CARD_STATEMENT =
     "INSERT INTO CARD (study_set_id, front, back) VALUES";
 
   private final String INSERT_STUDY_SET_STATEMENT =
@@ -260,7 +261,7 @@ public class StudySetServlet extends HttpServlet {
   )
     throws SQLException {
     PreparedStatement updateCardTable = conn.prepareStatement(
-      insertCardString(cards, insertCardStatement)
+      insertCardString(cards, INSERT_CARD_STATEMENT)
     );
     for (int i = 0; i < cards.size(); ++i) {
       String frontText = cards.get(i).get("front");
@@ -322,18 +323,14 @@ public class StudySetServlet extends HttpServlet {
   ) {
     String fullInsertStatement = insertStatement;
 
-    for (int i = 0; i < cards.size(); ++i) {
-      if (i > 0) {
-        fullInsertStatement += ", ";
-      }
-      fullInsertStatement += "(?, ?, ?)";
-    }
+    fullInsertStatement += String.join(", ", Collections.nCopies(cards.size(), "(?, ?, ?)"));
     fullInsertStatement += ";";
+    
 
     return fullInsertStatement;
   }
 
-  private void areFieldsFilled(
+  private boolean areFieldsFilled(
     String ownerID,
     String title,
     String subject,
@@ -362,8 +359,7 @@ public class StudySetServlet extends HttpServlet {
       if (frontText.isEmpty() || backText.isEmpty()) {
         return false;
       }
-
-      return true;
     }
+    return true;
   }
 }

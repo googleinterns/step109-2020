@@ -99,8 +99,8 @@ function addStudySet() {
     cards.push(contacts);
   }
 
-  var user_id = document.getElementById("user_id").value;
-  user_id = user_id.trim();
+  var userId = document.getElementById("user-id").value;
+  userId = userId.trim();
 
   var title = document.getElementById("title").value;
   title = title.trim();
@@ -111,28 +111,28 @@ function addStudySet() {
   var description = document.getElementById("description").value;
   description = description.trim();
 
-  var university_id = document.getElementById("university_id").value;
-  university_id = university_id.trim();
+  var universityId = document.getElementById("university-id").value;
+  universityId = universityId.trim();
 
   var professor = document.getElementById("professor").value;
   professor = professor.trim();
 
-  var academic_time = document.getElementById("academic_time").value;
-  academic_time = academic_time.trim();
+  var academicTime = document.getElementById("academic-time").value;
+  academicTime = academicTime.trim();
 
-  var course_name = document.getElementById("course_name").value;
-  course_name = course_name.trim();
+  var courseName = document.getElementById("course-name").value;
+  courseName = courseName.trim();
 
   if (
     !isStudySetInfoFilled(
-      user_id,
+      userId,
       title,
       subject,
       description,
-      university_id,
+      universityId,
       professor,
-      academic_time,
-      course_name
+      academicTime,
+      courseName
     )
   ) {
     window.alert(
@@ -145,14 +145,14 @@ function addStudySet() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      user_id: user_id,
+      user_id: userId,
       title: title,
       subject: subject,
       description: description,
-      university_id: university_id,
+      university_id: universityId,
       professor: professor,
-      academic_time: academic_time,
-      course_name: course_name,
+      academic_time: academicTime,
+      course_name: courseName,
       cards: cards,
     }),
   });
@@ -160,24 +160,24 @@ function addStudySet() {
 }
 
 function isStudySetInfoFilled(
-  user_id,
+  userId,
   title,
   subject,
   description,
-  university_id,
+  universityId,
   professor,
-  academic_time,
-  course_name
+  academicTime,
+  courseName
 ) {
   if (
-    user_id == "" ||
+    userId == "" ||
     title == "" ||
     subject == "" ||
     description == "" ||
-    university_id == "" ||
+    universityId == "" ||
     professor == "" ||
-    academic_time == "" ||
-    course_name == ""
+    academicTime == "" ||
+    courseName == ""
   ) {
     return false;
   }
