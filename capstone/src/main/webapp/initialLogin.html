@@ -3,7 +3,7 @@
     <head>
       <title>Studentia-Acount Creation</title>
       <link rel="stylesheet" href="style.css">
-      <link rel="stylesheet" href="style2.css">
+      <link rel="stylesheet" href="style-for-user-signup.css">
       
       <!--Import materialize.css-->
       <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"  media="screen,projection"/>
@@ -32,22 +32,22 @@
                 <div class="row">
                     <div class="input-field col s12">
                         <label for ="full_name">Full Name</label>
-                        <input type="text" onblur="checkFullNameInputValue()" name="full_name" id="full_name" placeholder="Type your full name ...">
-                        <span id="full_name_error"></span>
+                        <input type="text" onblur="checkFullNameInputValue()" name="full_name" id="full-name" placeholder="Type your full name ...">
+                        <span id="full-name-error"></span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
                         <label for ="user_name">User Name</label>
-                        <input type="text" onblur="checkUserNameInputValue()" name="user_name" id="user_name" placeholder="Type your user name ...">
-                        <span id="user_name_error"></span>
+                        <input type="text" onblur="checkUserNameInputValue()" name="user_name" id="user-name" placeholder="Type your user name ...">
+                        <span id="user-name-error"></span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
                         <label for ="university">University</label>
                         <input type="text" onblur="checkUniversityValue()" class="autocomplete" id="university" placeholder="Start typing your university name ...">
-                        <span id="university_error"></span>
+                        <span id="university-error"></span>
                     </div>
                 </div>
                 <div class="row">
@@ -70,6 +70,6 @@
 
       <!--JavaScript at end of body for optimized loading-->
       <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-      <script src="script2.js"></script>
+      <script src="script-for-user-authentication-process.js"></script>
     </body>
   </html>

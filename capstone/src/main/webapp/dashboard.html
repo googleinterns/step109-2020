@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Studentia-Dashboard</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="style2.css">
+    <link rel="stylesheet" href="style-for-user-signup.css">
     <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!--Import materialize.css-->
@@ -13,7 +13,7 @@
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   </head>
-  <body onload="getCurrentUserInfo()">
+  <body onload="getCurrentUserInfo(); getRecentStudySet();">
      <nav class="nav-wrapper">
         <a href="" class="brand-logo">Studentia</a>
         <a href="#" class="sidenav-trigger" data-target="slide_out" ><i class="material-icons">menu</i></a>
@@ -25,7 +25,7 @@
 
     <ul class="sidenav" id="slide_out">
           <li><a href="findStudySet.html">Search</a></li>
-          <li><a href="index.html">Home</a></li>
+          <li><a href="/">Home</a></li>
     </ul>
 
 
@@ -33,25 +33,38 @@
     <div class="container">
         <blockquote class="flow-text">Welcome to your personal dashboard, start learning !! </blockquote>
         <div class="row">
-            <div class="col s12 m6 l6 responsive-spaced-box z-depth-5">
-                    <h4>Your Profile Details</h4>
-                    <hr>
-                    <p>Full Name: <span id="full_name"></span></p>
-                    <p>User Name: <span id="user_name"></span></p>
-                    <p>University: <span id="university"></span></p>
-                    <p>Email Address: <span id="email"></span></p>
-                    <a href="" id="logout_url"  class="btn waves-effect waves-light">Log Out</a>
-                    <br>
+            <div class="col s12 m6 l6">
+                <div class="card darken-1">
+                    <div class="card-content black-text">
+                        <h4>Your Profile Details</h4>
+                        <hr>
+                        <p>Full Name: <span id="full-name"></span></p>
+                        <p>User Name: <span id="user-name"></span></p>
+                        <p>University: <span id="university"></span></p>
+                        <p>Email Address: <span id="email"></span></p>
+                    </div>
+                    <div class="card-action">
+                        <a href="" id="logout-url"  class="btn waves-effect waves-light">Log Out</a>
+                    </div>
+                </div>
             </div>
-            <div class="col s12 m12 l6 responsive-spaced-box z-depth-5">
-                    <p class="flow-text">
-                        Start studying and helping others by creating your study set now ! <br>
-                    </p>
-                    <a href="" id="logout_url"  class="btn waves-effect waves-light">
-                        <i class="material-icons right">add_circle</i> Create study set
-                    </a>
-                    <br>
+            <div class="col s12 m12 l6">
+                <div class="card darken-1">
+                    <div class="card-content black-text">
+                        <p class="flow-text">
+                            Start studying and helping others by creating your study set now ! <br>
+                        </p>
+                    </div>
+                    <div class="card-action">
+                        <a href="/createStudySet.html"  class="btn waves-effect waves-light">
+                            <i class="material-icons right">add_circle</i> Create study set
+                        </a>
+                    </div>
+                </div>
             </div>
+        </div>
+        <blockquote class="flow-text" id="study-set-text">Take a view at your most recently created study sets.</blockquote>
+        <div class="row" id="recent-study-set">
         </div>
     </div>
 
@@ -66,6 +79,6 @@
     <script type = "text/javascript" src = "https://code.jquery.com/jquery-2.1.1.min.js"></script>         
     <script type="text/javascript" src = "https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script> 
     <script src="script.js"></script>  
-    <script src="script2.js"></script>
+    <script src="script-for-user-authentication-process.js"></script>
   </body>
 </html>
