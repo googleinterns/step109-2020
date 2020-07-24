@@ -35,7 +35,7 @@ function configureSearchResponseToHTML(studySets) {
 }
 
 
-function formatCardInHTML(studySet) {
+function formatInfoCardInHTML(studySet) {
   return `<a href="/viewStudySet.html?id=${studySet.id}" class="result-card">
       <div class="row result-card"> 
         <div class="col card s12 m12 l12">
