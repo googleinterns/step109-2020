@@ -47,7 +47,7 @@ public class UsersServlet extends HttpServlet {
 
   private final String URL_TO_REDIRECT_AFTER_USER_LOGS_OUT = "/";
   private final String URL_TO_REDIRECT_AFTER_USER_LOGS_IN =
-    "/users?query_source=server";
+    "/login";
 
   private final String GET_USER_ROW_QUERY =
     "SELECT user_info.id, user_info.email,  user_info.full_name, " +
