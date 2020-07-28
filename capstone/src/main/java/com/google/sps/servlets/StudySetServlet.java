@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import javax.servlet.ServletContext;
@@ -43,7 +44,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
-import java.util.Collections;
 
 @WebServlet(urlPatterns = { "/study_set/*" })
 public class StudySetServlet extends HttpServlet {
@@ -55,7 +55,7 @@ public class StudySetServlet extends HttpServlet {
     "study_set.title ILIKE ? OR study_set.description ILIKE ? OR user_info.user_name ILIKE ? " +
     "GROUP BY study_set.id, university.id, user_info.id";
 
-  private final String  INSERT_CARD_STATEMENT =
+  private final String INSERT_CARD_STATEMENT =
     "INSERT INTO CARD (study_set_id, front, back) VALUES";
 
   private final String INSERT_STUDY_SET_STATEMENT =
@@ -74,39 +74,46 @@ public class StudySetServlet extends HttpServlet {
     " WHERE study_set.id = ?" +
     " GROUP BY card.id, study_set.id, university.id, user_info.id;";
 
-  private final String SEARCH_STUDY_SET_BY_USER = 
-    "SELECT COUNT(card.study_set_id), study_set.id, study_set.title, study_set.description, study_set.subject, "+
-    "university.name, user_info.user_name FROM study_set "+
-    "JOIN university ON university.id = study_set.university_id JOIN user_info ON study_set.owner_id = user_info.id "+
-    "JOIN card ON card.study_set_id = study_set.id  "+
-    "WHERE user_info.id = ? GROUP BY study_set.id, university.id, user_info.id "+
+  private final String SEARCH_STUDY_SET_BY_USER =
+    "SELECT COUNT(card.study_set_id), study_set.id, study_set.title, study_set.description, study_set.subject, " +
+    "university.name, user_info.user_name FROM study_set " +
+    "JOIN university ON university.id = study_set.university_id JOIN user_info ON study_set.owner_id = user_info.id " +
+    "JOIN card ON card.study_set_id = study_set.id  " +
+    "WHERE user_info.id = ? GROUP BY study_set.id, university.id, user_info.id " +
     "ORDER BY study_set.update_time LIMIT 3";
-  
+
   public ArrayList<HashMap<String, String>> getStudySetFromUserId(
-      DataSource pool,
-      String pathInfo
-    ) throws SQLException {
-      ArrayList<HashMap<String, String>> studySetResult = new ArrayList<>();
-      Integer userId = Integer.parseInt(pathInfo.substring(6));
-      try ( Connection conn = pool.getConnection();
-            PreparedStatement queryStatement = conn.prepareStatement(SEARCH_STUDY_SET_BY_USER)
-          ) {
-              queryStatement.setInt(1, userId);
-              ResultSet result = queryStatement.executeQuery();
-              while(result.next()) {
-                  HashMap<String, String> newEntry = new HashMap<>();
-                  newEntry.put("study_set_length", Integer.toString(result.getInt("count")));
-                  newEntry.put("id", Integer.toString(result.getInt("id")));
-                  newEntry.put("title", result.getString("title"));
-                  newEntry.put("description", result.getString("description"));
-                  newEntry.put("subject", result.getString("subject"));
-                  newEntry.put("university", result.getString("name"));
-                  newEntry.put("user_name", result.getString("user_name"));
-                  studySetResult.add(newEntry);
-              }
-          return studySetResult;  
-        }  
-    } 
+    DataSource pool,
+    String pathInfo
+  )
+    throws SQLException {
+    ArrayList<HashMap<String, String>> studySetResult = new ArrayList<>();
+    Integer userId = Integer.parseInt(pathInfo.substring(6));
+    try (
+      Connection conn = pool.getConnection();
+      PreparedStatement queryStatement = conn.prepareStatement(
+        SEARCH_STUDY_SET_BY_USER
+      )
+    ) {
+      queryStatement.setInt(1, userId);
+      ResultSet result = queryStatement.executeQuery();
+      while (result.next()) {
+        HashMap<String, String> newEntry = new HashMap<>();
+        newEntry.put(
+          "study_set_length",
+          Integer.toString(result.getInt("count"))
+        );
+        newEntry.put("id", Integer.toString(result.getInt("id")));
+        newEntry.put("title", result.getString("title"));
+        newEntry.put("description", result.getString("description"));
+        newEntry.put("subject", result.getString("subject"));
+        newEntry.put("university", result.getString("name"));
+        newEntry.put("user_name", result.getString("user_name"));
+        studySetResult.add(newEntry);
+      }
+      return studySetResult;
+    }
+  }
 
   public ArrayList<HashMap<String, String>> runSearchStudySetSqlQuery(
     DataSource pool,
@@ -206,9 +213,8 @@ public class StudySetServlet extends HttpServlet {
       if (pathInfo == null) {
         String searchWord = request.getParameter("stringToSearchBy");
         return runSearchStudySetSqlQuery(pool, searchWord);
-      }
-      else if(pathInfo.startsWith("/user")) {
-          return getStudySetFromUserId(pool, pathInfo);
+      } else if (pathInfo.startsWith("/user")) {
+        return getStudySetFromUserId(pool, pathInfo);
       }
       return runViewStudySetSqlQuery(pool, pathInfo);
     } catch (SQLException ex) {
@@ -360,9 +366,9 @@ public class StudySetServlet extends HttpServlet {
   ) {
     String fullInsertStatement = insertStatement;
 
-    fullInsertStatement += String.join(", ", Collections.nCopies(cards.size(), "(?, ?, ?)"));
+    fullInsertStatement +=
+      String.join(", ", Collections.nCopies(cards.size(), "(?, ?, ?)"));
     fullInsertStatement += ";";
-    
 
     return fullInsertStatement;
   }

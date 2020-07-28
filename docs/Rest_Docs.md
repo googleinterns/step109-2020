@@ -69,7 +69,7 @@ Dashboard.html calls -->/users/id#
   ```
 
 ## View  Study Set
-/study_sets/#id → GET request.
+/study_set/#id → GET request.
 ```
 {
 	id: #,
@@ -96,6 +96,18 @@ Dashboard.html calls -->/users/id#
 		]
 }
 ```
+
+## View Study set associated with a user
+/study_set/user/#id --> GET request
+{   
+    study_set_length: #,
+    subject: "",
+    university: "",
+    description: "",
+    user_author: "",
+    id: #, (id of the study set)
+    title: ""
+}
 
 
 ### Non MVP UPDATING CARDS 

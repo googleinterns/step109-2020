@@ -14,3 +14,8 @@
   margin: 10px;
   border-radius: 2%;
 }
+
+.card-description {
+    font-size: 20px;
+    font-weight: 400;
+}

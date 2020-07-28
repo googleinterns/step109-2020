@@ -33,8 +33,6 @@ function setUpAutoComplete(universityDataFromRequest){
     }
 }
 
-getUniversity();
-
 document.addEventListener('DOMContentLoaded', function() {
     //Init auto complete.
     const universityList = (function(){
@@ -45,6 +43,20 @@ document.addEventListener('DOMContentLoaded', function() {
         return instances[0]
     })();
 });
+
+async function redirectUserToRightPage(){
+    const response = await fetch("/users/current");
+    if (response.status  == 200) {
+        window.location.replace("/dashboard.html");
+    }
+    else if (response.status == 300) {
+        window.location.replace("/validate_email");
+    }
+    else if (response.status == 401){
+        const responseBody = await response.json();
+        document.getElementById("login").href = decodeURIComponent(responseBody.loginUrl);
+    }
+}
 
 function checkUniversityValue() {
     var val = document.getElementById("university").value;
@@ -106,90 +118,40 @@ async function registerUserDetails() {
     var userName = checkUserNameInputValue();
     data = {"full_name": fullName, "user_name": userName, "university": universityId};
     const response = await fetch("/users", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
-    const result = await response.json();
     window.location.pathname = "/dashboard.html";
  }
 
-function fillUserDashboardPage(responseBody) {
-    if (responseBody.user_status == "true") {
-        var fullNameTag = document.getElementById("full-name");
-        var userNameTag = document.getElementById("user-name");
-        var univeristyTag = document.getElementById("university");
-        var emailTag = document.getElementById("email");
-        var logoutButton = document.getElementById("logout-url");
-        fullNameTag.textContent = responseBody.full_name;
-        userNameTag.textContent = responseBody.user_name;
-        univeristyTag.textContent = responseBody.university;
-        emailTag.textContent = responseBody.email;
-        logoutButton.href = decodeURIComponent(responseBody.logoutUrl);
+async function fillUserDashboardPage() {
+    const response = await fetch("/users/current");
+    if (response.status == 200) {
+        const responseBody =  await response.json();
+        document.getElementById("full-name").textContent = responseBody.full_name;
+        document.getElementById("user-name").textContent = responseBody.user_name;
+        document.getElementById("university").textContent = responseBody.university;
+        document.getElementById("email").textContent = responseBody.email;
+        document.getElementById("logout-url").href = decodeURIComponent(responseBody.logoutUrl);
+        getRecentStudySet(responseBody.id);
     }
-    else{
+    else if (response.status == 401) {
         window.location.replace("/");
     }
+    else if (response.status == 300) { 
+        window.location.replace("/validate_email");
+    }
 }
 
-function invalidEmailInput(logoutUrl) {
+function invalidEmailRequest() {
+    const params = new URLSearchParams(window.location.search);
     var continueButton = document.getElementById("continue");
-    continueButton.href = logoutUrl;
+    continueButton.href = params.get("logoutUrl");
+    
 }
 
-// add the redirect:"manual" option to the fetch command, and change the "/users" in userservlet to "/user" and the other one to "/users"
-//when you do this you get a blank response wityh no detail at all and the status is 0, type is called opaqueredirect type.
+function getNewUserEmail(){
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById("email-field").textContent = params.get("email");
 
-async function getCurrentUserInfo(){
-    const response = await fetch("/users?query_source=client");
-    const responseBody =  await response.json();
-    console.log(response);
-    console.log(response.status);
-    console.log(response.url);
-    console.log(response.redirected);
-    console.log(responseBody);
-    var logOutDec = decodeURIComponent(responseBody.logoutUrl);
-    var userId = responseBody.id;
-    console.log(userId);
-
-    if (responseBody.status_code == "200") {
-        if (window.location.pathname == "/") {
-            window.location.pathname = "/dashboard.html";
-        }
-        fillUserDashboardPage(responseBody);
-        getRecentStudySet(userId);
-    }
-    else if (responseBody.status_code == "412"){
-        if(window.location.pathname == "/"){
-            window.location.pathname = "/invalidEmail.html";
-        }
-        invalidEmailInput(logOutDec);       
-    }
-    else if (responseBody.status_code == "401"){
-        if (window.location.pathname == "/dashboard.html"){
-            window.location.pathname = "/";
-        }
-        var homeLogin = document.getElementById("login");
-        homeLogin.href =  decodeURIComponent(responseBody.loginUrl);
-    }
-    else if(responseBody.status_code == "303"){
-        if(window.location.pathname == "/"){
-            window.location.pathname = "/initialLogin.html";
-        }
-        document.getElementById("email-field").textContent = responseBody.email;
-
-    }
 }
-// <div class="col s12 m4">
-//                 <div class="card yellow-grey darken-1">
-//                     <div class="card-content black-text">
-//                         <span class="card-title">Study Set Title, Subject</span>
-//                         <p>
-//                             The description of the study set goes here
-//                         </p>
-//                     </div>
-//                     <div class="card-action">
-//                         <p>
-//                             This study set has 2 cards
-//                         </p>
-//                     </div>
-//                 </div>
 
 function addNewStudySet(responseBody){
     var linkElement = document.createElement("a");
@@ -201,7 +163,7 @@ function addNewStudySet(responseBody){
     var cardContentDivElement = document.createElement("div");
     cardContentDivElement.className = "card-content black-text";
     var spanElement = document.createElement("span");
-    spanElement.className = "card-title";
+    spanElement.className = "card-description";
     spanElement.textContent = responseBody.title + ", " + responseBody.subject;
     cardContentDivElement.append(spanElement);
     var paragraphElement = document.createElement("p");
@@ -222,8 +184,6 @@ function addNewStudySet(responseBody){
 async function getRecentStudySet(userId){
     const response = await fetch("/study_set/user/"+userId);
     const responseBody = await response.json();
-    console.log(responseBody);
-    console.log(userId);
     if(!Object.keys(responseBody).length){
      document.getElementById("study-set-text").textContent = "You are yet to create a study set, click above to start now !";
      return ;
