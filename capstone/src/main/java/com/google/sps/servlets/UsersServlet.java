@@ -209,20 +209,18 @@ public class UsersServlet extends HttpServlet {
    * @param pool It is a DataSource object that serves to interact with our database connection.
    * @param userService This is a UserService object that holds information about the current user.
    * @param resultParameters  A HashMap object that holds all the information sent in the "body" of the user's request.
-   * @param create_new_user_query A string object that contain the SQL query to create a new user in our database.
    * @return void
    */
   public void saveUserDetails(
     DataSource pool,
     UserService userService,
-    HashMap<String, String> resultParameters,
-    String create_new_user_query
+    HashMap<String, String> resultParameters
   )
     throws SQLException {
     try (
       Connection conn = pool.getConnection();
       PreparedStatement queryStatement = conn.prepareStatement(
-        create_new_user_query
+        CREATE_NEW_USER_QUERY
       )
     ) {
       String user_email = userService.getCurrentUser().getEmail();
@@ -272,7 +270,7 @@ public class UsersServlet extends HttpServlet {
     }
     if (isUniversityIdValid) {
       try {
-        saveUserDetails(pool, userService, resultParameters, CREATE_NEW_USER_QUERY);
+        saveUserDetails(pool, userService, resultParameters);
       } catch (SQLException ex) {
         throw new RuntimeException("There is an error with your sql statement ... ", ex);
       }
