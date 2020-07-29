@@ -16,6 +16,8 @@
 
 package com.google.sps.servlets;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.sps.data.Card;
@@ -73,6 +75,9 @@ public class StudySetServlet extends HttpServlet {
     " JOIN card ON card.study_set_id = study_set.id" +
     " WHERE study_set.id = ?" +
     " GROUP BY card.id, study_set.id, university.id, user_info.id;";
+
+    private final String GET_USERID_FROM_EMAIL =
+    "SELECT user_info.id FROM user_info WHERE user_info.email = ?;";
 
   public ArrayList<HashMap<String, String>> runSearchStudySetSqlQuery(
     DataSource pool,
@@ -195,7 +200,7 @@ public class StudySetServlet extends HttpServlet {
     throws IOException {
     HashMap<String, Object> resultsParams = new Gson()
     .fromJson(request.getReader(), HashMap.class);
-    String ownerID = resultsParams.get("user_id").toString(); // This will be replaced in next PR
+    
     String title = resultsParams.get("title").toString();
     String subject = resultsParams.get("subject").toString();
     String description = resultsParams.get("description").toString();
@@ -213,7 +218,6 @@ public class StudySetServlet extends HttpServlet {
 
     if (
       !areFieldsFilled(
-        ownerID,
         title,
         subject,
         description,
@@ -236,9 +240,14 @@ public class StudySetServlet extends HttpServlet {
       );
       return;
     }
+    String ownerID = getOwnerId(pool);
+    if (ownerID.isEmpty()) {
+      System.err.println("User must be Logged in");
+      return;
+    }
 
     createRow(
-      ownerID,
+    ownerID,
       title,
       subject,
       description,
@@ -250,8 +259,9 @@ public class StudySetServlet extends HttpServlet {
       pool,
       cards
     );
-
-    response.sendRedirect("/createStudySet.html");
+    String viewHTML = "/viewStudySet.html?id=";
+    viewHTML += ownerID;
+    response.sendRedirect(viewHTML);
   }
 
   private void createCard(
@@ -276,7 +286,7 @@ public class StudySetServlet extends HttpServlet {
   }
 
   private void createRow(
-    String ownerID,
+      String ownerID,
     String title,
     String subject,
     String description,
@@ -331,7 +341,6 @@ public class StudySetServlet extends HttpServlet {
   }
 
   private boolean areFieldsFilled(
-    String ownerID,
     String title,
     String subject,
     String description,
@@ -342,7 +351,6 @@ public class StudySetServlet extends HttpServlet {
     ArrayList<LinkedTreeMap<String, String>> cards
   ) {
     if (
-      ownerID.isEmpty() ||
       title.isEmpty() ||
       subject.isEmpty() ||
       description.isEmpty() ||
@@ -361,5 +369,28 @@ public class StudySetServlet extends HttpServlet {
       }
     }
     return true;
+  }
+  private String getOwnerId(DataSource pool) {
+    UserService userService = UserServiceFactory.getUserService();
+    Boolean isUserLoggedIn = userService.isUserLoggedIn();
+    if (!isUserLoggedIn) {
+      System.err.println("Need to be logged in");
+      return "";
+    }
+    String email = userService.getCurrentUser().getEmail();
+
+    try (Connection conn = pool.getConnection()) {
+      PreparedStatement getUserStatement = conn.prepareStatement(
+        GET_USERID_FROM_EMAIL
+      );
+      getUserStatement.setString(1, email);
+      ResultSet result = getUserStatement.executeQuery();
+      while (result.next()) {
+        return result.getString("id");
+      }
+    } catch (SQLException ex) {
+      throw new RuntimeException("Unable to verify Connection", ex);
+    }
+    return "";
   }
 }

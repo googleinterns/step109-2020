@@ -192,9 +192,6 @@ function addStudySet() {
     cards.push(contacts);
   }
 
-  var userId = document.getElementById("user-id").value;
-  userId = userId.trim();
-
   var title = document.getElementById("title").value;
   title = title.trim();
 
@@ -218,7 +215,6 @@ function addStudySet() {
 
   if (
     !isStudySetInfoFilled(
-      userId,
       title,
       subject,
       description,
@@ -238,7 +234,6 @@ function addStudySet() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      user_id: userId,
       title: title,
       subject: subject,
       description: description,
@@ -253,7 +248,6 @@ function addStudySet() {
 }
 
 function isStudySetInfoFilled(
-  userId,
   title,
   subject,
   description,
@@ -263,7 +257,6 @@ function isStudySetInfoFilled(
   courseName
 ) {
   if (
-    userId == "" ||
     title == "" ||
     subject == "" ||
     description == "" ||
@@ -275,4 +268,13 @@ function isStudySetInfoFilled(
     return false;
   }
   return true;
+}
+
+async function checkLogIn(){
+    const logResponse = await fetch("/loggedIn");
+    console.log("kill");
+    console.log(logResponse.status);
+    if (logResponse.status == 401){
+        window.location.replace("/index.html");
+    }
 }
