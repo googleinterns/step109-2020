@@ -16,6 +16,8 @@
 
 package com.google.sps.servlets;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.sps.data.Card;
@@ -31,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import javax.servlet.ServletContext;
@@ -43,7 +46,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
-import java.util.Collections;
 
 @WebServlet(urlPatterns = { "/study_set/*" })
 public class StudySetServlet extends HttpServlet {
@@ -55,7 +57,7 @@ public class StudySetServlet extends HttpServlet {
     "study_set.title ILIKE ? OR study_set.description ILIKE ? OR user_info.user_name ILIKE ? " +
     "GROUP BY study_set.id, university.id, user_info.id";
 
-  private final String  INSERT_CARD_STATEMENT =
+  private final String INSERT_CARD_STATEMENT =
     "INSERT INTO CARD (study_set_id, front, back) VALUES";
 
   private final String INSERT_STUDY_SET_STATEMENT =
@@ -74,39 +76,49 @@ public class StudySetServlet extends HttpServlet {
     " WHERE study_set.id = ?" +
     " GROUP BY card.id, study_set.id, university.id, user_info.id;";
 
-  private final String SEARCH_STUDY_SET_BY_USER = 
-    "SELECT COUNT(card.study_set_id), study_set.id, study_set.title, study_set.description, study_set.subject, "+
-    "university.name, user_info.user_name FROM study_set "+
-    "JOIN university ON university.id = study_set.university_id JOIN user_info ON study_set.owner_id = user_info.id "+
-    "JOIN card ON card.study_set_id = study_set.id  "+
-    "WHERE user_info.id = ? GROUP BY study_set.id, university.id, user_info.id "+
+  private final String SEARCH_STUDY_SET_BY_USER =
+    "SELECT COUNT(card.study_set_id), study_set.id, study_set.title, study_set.description, study_set.subject, " +
+    "university.name, user_info.user_name FROM study_set " +
+    "JOIN university ON university.id = study_set.university_id JOIN user_info ON study_set.owner_id = user_info.id " +
+    "JOIN card ON card.study_set_id = study_set.id  " +
+    "WHERE user_info.id = ? GROUP BY study_set.id, university.id, user_info.id " +
     "ORDER BY study_set.update_time LIMIT 3";
-  
+
+  private final String GET_USERID_FROM_EMAIL =
+    "SELECT user_info.id FROM user_info WHERE user_info.email = ?;";
+
   public ArrayList<HashMap<String, String>> getStudySetFromUserId(
-      DataSource pool,
-      String pathInfo
-    ) throws SQLException {
-      ArrayList<HashMap<String, String>> studySetResult = new ArrayList<>();
-      Integer userId = Integer.parseInt(pathInfo.substring(6));
-      try ( Connection conn = pool.getConnection();
-            PreparedStatement queryStatement = conn.prepareStatement(SEARCH_STUDY_SET_BY_USER)
-          ) {
-              queryStatement.setInt(1, userId);
-              ResultSet result = queryStatement.executeQuery();
-              while(result.next()) {
-                  HashMap<String, String> newEntry = new HashMap<>();
-                  newEntry.put("study_set_length", Integer.toString(result.getInt("count")));
-                  newEntry.put("id", Integer.toString(result.getInt("id")));
-                  newEntry.put("title", result.getString("title"));
-                  newEntry.put("description", result.getString("description"));
-                  newEntry.put("subject", result.getString("subject"));
-                  newEntry.put("university", result.getString("name"));
-                  newEntry.put("user_name", result.getString("user_name"));
-                  studySetResult.add(newEntry);
-              }
-          return studySetResult;  
-        }  
-    } 
+    DataSource pool,
+    String pathInfo
+  )
+    throws SQLException {
+    ArrayList<HashMap<String, String>> studySetResult = new ArrayList<>();
+    Integer userId = Integer.parseInt(pathInfo.substring(6));
+    try (
+      Connection conn = pool.getConnection();
+      PreparedStatement queryStatement = conn.prepareStatement(
+        SEARCH_STUDY_SET_BY_USER
+      )
+    ) {
+      queryStatement.setInt(1, userId);
+      ResultSet result = queryStatement.executeQuery();
+      while (result.next()) {
+        HashMap<String, String> newEntry = new HashMap<>();
+        newEntry.put(
+          "study_set_length",
+          Integer.toString(result.getInt("count"))
+        );
+        newEntry.put("id", Integer.toString(result.getInt("id")));
+        newEntry.put("title", result.getString("title"));
+        newEntry.put("description", result.getString("description"));
+        newEntry.put("subject", result.getString("subject"));
+        newEntry.put("university", result.getString("name"));
+        newEntry.put("user_name", result.getString("user_name"));
+        studySetResult.add(newEntry);
+      }
+      return studySetResult;
+    }
+  }
 
   public ArrayList<HashMap<String, String>> runSearchStudySetSqlQuery(
     DataSource pool,
@@ -206,9 +218,8 @@ public class StudySetServlet extends HttpServlet {
       if (pathInfo == null) {
         String searchWord = request.getParameter("stringToSearchBy");
         return runSearchStudySetSqlQuery(pool, searchWord);
-      }
-      else if(pathInfo.startsWith("/user")) {
-          return getStudySetFromUserId(pool, pathInfo);
+      } else if (pathInfo.startsWith("/user")) {
+        return getStudySetFromUserId(pool, pathInfo);
       }
       return runViewStudySetSqlQuery(pool, pathInfo);
     } catch (SQLException ex) {
@@ -232,7 +243,6 @@ public class StudySetServlet extends HttpServlet {
     throws IOException {
     HashMap<String, Object> resultsParams = new Gson()
     .fromJson(request.getReader(), HashMap.class);
-    String ownerID = resultsParams.get("user_id").toString(); // This will be replaced in next PR
     String title = resultsParams.get("title").toString();
     String subject = resultsParams.get("subject").toString();
     String description = resultsParams.get("description").toString();
@@ -250,7 +260,6 @@ public class StudySetServlet extends HttpServlet {
 
     if (
       !areFieldsFilled(
-        ownerID,
         title,
         subject,
         description,
@@ -271,6 +280,11 @@ public class StudySetServlet extends HttpServlet {
       System.err.println(
         "Connection to SQL database not working because servlet is not conntect to the database"
       );
+      return;
+    }
+    String ownerID = getOwnerId(pool);
+    if (ownerID.equals("")) {
+      System.err.println("User must be Logged in");
       return;
     }
 
@@ -360,15 +374,14 @@ public class StudySetServlet extends HttpServlet {
   ) {
     String fullInsertStatement = insertStatement;
 
-    fullInsertStatement += String.join(", ", Collections.nCopies(cards.size(), "(?, ?, ?)"));
+    fullInsertStatement +=
+      String.join(", ", Collections.nCopies(cards.size(), "(?, ?, ?)"));
     fullInsertStatement += ";";
-    
 
     return fullInsertStatement;
   }
 
   private boolean areFieldsFilled(
-    String ownerID,
     String title,
     String subject,
     String description,
@@ -379,7 +392,6 @@ public class StudySetServlet extends HttpServlet {
     ArrayList<LinkedTreeMap<String, String>> cards
   ) {
     if (
-      ownerID.isEmpty() ||
       title.isEmpty() ||
       subject.isEmpty() ||
       description.isEmpty() ||
@@ -398,5 +410,29 @@ public class StudySetServlet extends HttpServlet {
       }
     }
     return true;
+  }
+
+  private String getOwnerId(DataSource pool) {
+    UserService userService = UserServiceFactory.getUserService();
+    Boolean isUserLoggedIn = userService.isUserLoggedIn();
+    if (!isUserLoggedIn) {
+      System.err.println("Need to be logged in");
+      return "";
+    }
+    String email = userService.getCurrentUser().getEmail();
+
+    try (Connection conn = pool.getConnection()) {
+      PreparedStatement getUserStatement = conn.prepareStatement(
+        GET_USERID_FROM_EMAIL
+      );
+      getUserStatement.setString(1, email);
+      ResultSet result = getUserStatement.executeQuery();
+      while (result.next()) {
+        return result.getString("id");
+      }
+    } catch (SQLException ex) {
+      throw new RuntimeException("Unable to verify Connection", ex);
+    }
+    return "";
   }
 }

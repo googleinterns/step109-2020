@@ -35,7 +35,7 @@ function configureSearchResponseToHTML(studySets) {
 }
 
 
-function formatCardInHTML(studySet) {
+function formatInfoCardInHTML(studySet) {
   return `<a href="/viewStudySet.html?id=${studySet.id}" class="result-card">
       <div class="row result-card"> 
         <div class="col card s12 m12 l12">
@@ -192,9 +192,6 @@ function addStudySet() {
     cards.push(contacts);
   }
 
-  var userId = document.getElementById("user-id").value;
-  userId = userId.trim();
-
   var title = document.getElementById("title").value;
   title = title.trim();
 
@@ -206,6 +203,7 @@ function addStudySet() {
 
   var universityId = document.getElementById("university-id").value;
   universityId = universityId.trim();
+  
 
   var professor = document.getElementById("professor").value;
   professor = professor.trim();
@@ -218,7 +216,6 @@ function addStudySet() {
 
   if (
     !isStudySetInfoFilled(
-      userId,
       title,
       subject,
       description,
@@ -238,7 +235,6 @@ function addStudySet() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      user_id: userId,
       title: title,
       subject: subject,
       description: description,
@@ -249,11 +245,10 @@ function addStudySet() {
       cards: cards,
     }),
   });
-  window.location.reload();
+  window.location.replace("/index.html");
 }
 
 function isStudySetInfoFilled(
-  userId,
   title,
   subject,
   description,
@@ -263,7 +258,6 @@ function isStudySetInfoFilled(
   courseName
 ) {
   if (
-    userId == "" ||
     title == "" ||
     subject == "" ||
     description == "" ||
@@ -275,4 +269,11 @@ function isStudySetInfoFilled(
     return false;
   }
   return true;
+}
+
+async function checkLogIn(){
+    const logResponse = await fetch("/loggedIn");
+    if (logResponse.status == 401){
+        window.location.replace("/index.html");
+    }
 }
