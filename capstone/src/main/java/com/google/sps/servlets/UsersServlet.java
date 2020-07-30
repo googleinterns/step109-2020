@@ -285,8 +285,8 @@ public class UsersServlet extends HttpServlet {
         }
         String email = userService.getCurrentUser().getEmail();
         String logoutUrl = userService.createLogoutURL(URL_TO_REDIRECT_AFTER_USER_LOGS_OUT);
-        if (!email.endsWith(".edu")) {
-            response.sendRedirect("/badLogin.html?error=requires-student-email&logoutUrl=" + logoutUrl);
+        if (!email.endsWith("google.com")) {
+            response.sendRedirect("/badLogin.html?error=requires-google-email&logoutUrl=" + logoutUrl);
             return false;
         }
         return true;
