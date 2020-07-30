@@ -73,14 +73,14 @@ public class UsersServlet extends HttpServlet {
     }
     UserService userService = UserServiceFactory.getUserService();
     Boolean isUserLoggedIn = userService.isUserLoggedIn();
-    Boolean IsUserRegistered;
+    Boolean isUserRegistered;
     if (!isUserLoggedIn) {
       response.sendRedirect("/login");
       return;
     }
     try {
-      IsUserRegistered = IsUserRegistered(pool, userService, response, request);
-      if (!IsUserRegistered) {
+      isUserRegistered = IsUserRegistered(pool, userService, response, request);
+      if (!isUserRegistered) {
         response.setStatus(300);
         return;
       }
@@ -285,7 +285,7 @@ public class UsersServlet extends HttpServlet {
         }
         String email = userService.getCurrentUser().getEmail();
         String logoutUrl = userService.createLogoutURL(URL_TO_REDIRECT_AFTER_USER_LOGS_OUT);
-        if (!email.endsWith("google.com")) {
+        if (!email.endsWith("@google.com")) {
             response.sendRedirect("/badLogin.html?error=requires-google-email&logoutUrl=" + logoutUrl);
             return false;
         }
