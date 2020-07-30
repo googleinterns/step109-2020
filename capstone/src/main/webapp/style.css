@@ -345,8 +345,13 @@ div#all-cards-container {
 
 
 /* Create Study Set */
+section.creation-content{
+  display: flex;
+  flex-grow:1;
+}
 div.row.study-set-creation{
   min-height:100%;
+  flex-grow: 1;
   display: flex;
   flex-direction: row;
   justify-content:space-evenly;
@@ -354,13 +359,13 @@ div.row.study-set-creation{
 }
 
 div.create-box{
-    margin-top:20px;
-    margin-bottom: 20px;
+  margin-top:20px;
+  margin-bottom: 20px;
 }
 
 div.card-creation{
   margin-top:20px;
-  height:800px;
+  height:900px;
   overflow-y:scroll;
-  align-self:flex-end;
+  
 }
