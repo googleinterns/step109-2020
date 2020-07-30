@@ -56,6 +56,81 @@ public class UsersServlet extends HttpServlet {
     "WHERE user_info.email = ?";
 
   /**
+   * This method is called when a GET request is sent to the "/users/*" endpoint
+   * @param request A HttpServletRequest object that holds the information sent by the user.
+   * @param response A HttpServletResponse object that holds the information that will be sent back to the user.
+   * @return void
+   */
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws IOException, ServletException {
+    response.setContentType("application/json");
+    ServletContext servletContext = getServletContext();
+    DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
+    if (!request.getPathInfo().equals("/current")) {
+      response.sendError(404, "Invalid url supplied by the client.");
+      return;
+    }
+    UserService userService = UserServiceFactory.getUserService();
+    Boolean isUserLoggedIn = userService.isUserLoggedIn();
+    Boolean IsUserRegistered;
+    if (!isUserLoggedIn) {
+      response.sendRedirect("/login");
+      return;
+    }
+    try {
+      IsUserRegistered = IsUserRegistered(pool, userService, response, request);
+      if (!IsUserRegistered) {
+        response.setStatus(300);
+        return;
+      }
+    } catch (SQLException ex) {
+      throw new RuntimeException("There is an error with your sql statement ... ", ex);
+    }
+
+    String userResult;
+    try {
+      HashMap<String, String> userDetails = retrieveExistingUserInfo(pool, userService, response, request);
+      userResult = new Gson().toJson(userDetails);
+    } catch (SQLException ex) {
+      throw new RuntimeException("There is an error with your sql statement ... ", ex);
+    }
+    response.getWriter().println(userResult);
+  }
+
+  /**
+   * This method is called when a POST request is sent to "/users" endpoint.
+   * @param request A HttpServletRequest object that holds the information sent by the user.
+   * @param response A HttpServletResponse object that holds the information that will be sent back to the user.
+   * @return void
+   */
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
+    throws IOException {
+    response.setContentType("application/json");
+    ServletContext servletContext = getServletContext();
+    DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
+    UserService userService = UserServiceFactory.getUserService();
+    if(!isPostRequestAuthorized(userService, pool, response)){
+        return;
+    }
+    HashMap<String, String> resultParameters = new Gson().fromJson(request.getReader(), HashMap.class);
+    Boolean isUniversityIdValid;
+    try {
+      isUniversityIdValid = checkUniversityIdExists(pool, userService, response, resultParameters);
+    } catch (SQLException ex) {
+      throw new RuntimeException("There is an error with your sql statement ... ", ex);
+    }
+    if (isUniversityIdValid) {
+      try {
+        saveUserDetails(pool, userService, resultParameters);
+      } catch (SQLException ex) {
+        throw new RuntimeException("There is an error with your sql statement ... ", ex);
+      }
+    }
+  }
+
+  /**
    * This method checks if the current user is already registered in our database.
    * @param pool It is a DataSource object that serves to interact with our database connection.
    * @param userService This is a UserService object that holds information about the current user.
@@ -130,49 +205,7 @@ public class UsersServlet extends HttpServlet {
     }
   }
 
-  /**
-   * This method is called when a GET request is sent to the "/users/*" endpoint
-   * @param request A HttpServletRequest object that holds the information sent by the user.
-   * @param response A HttpServletResponse object that holds the information that will be sent back to the user.
-   * @return void
-   */
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws IOException, ServletException {
-    response.setContentType("application/json");
-    ServletContext servletContext = getServletContext();
-    DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
-    if (!request.getPathInfo().equals("/current")) {
-      response.sendError(404, "Invalid url supplied by the client.");
-      return;
-    }
-    UserService userService = UserServiceFactory.getUserService();
-    Boolean isUserLoggedIn = userService.isUserLoggedIn();
-    Boolean IsUserRegistered;
-    if (!isUserLoggedIn) {
-      response.sendRedirect("/login");
-      return;
-    }
-    try {
-      IsUserRegistered = IsUserRegistered(pool, userService, response, request);
-      if (!IsUserRegistered) {
-        response.setStatus(300);
-        return;
-      }
-    } catch (SQLException ex) {
-      throw new RuntimeException("There is an error with your sql statement ... ", ex);
-    }
-
-    String userResult;
-    try {
-      HashMap<String, String> userDetails = retrieveExistingUserInfo(pool, userService, response, request);
-      userResult = new Gson().toJson(userDetails);
-    } catch (SQLException ex) {
-      throw new RuntimeException("There is an error with your sql statement ... ", ex);
-    }
-    response.getWriter().println(userResult);
-  }
-
+  
   /**
    * This method checks if the university id provided by the client is valid i.e exists in our database.
    * @param pool It is a DataSource object that serves to interact with our database connection.
@@ -237,44 +270,25 @@ public class UsersServlet extends HttpServlet {
   }
 
   /**
-   * This method is called when a POST request is sent to "/users" endpoint.
-   * @param request A HttpServletRequest object that holds the information sent by the user.
+   * This method checks if the POST request is authorized or not.
+   * @param pool It is a DataSource object that serves to interact with our database connection.
+   * @param userService This is a UserService object that holds information about the current user.
    * @param response A HttpServletResponse object that holds the information that will be sent back to the user.
-   * @return void
+   * @return Boolean
    */
-  @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws IOException {
-    response.setContentType("application/json");
-    ServletContext servletContext = getServletContext();
-    DataSource pool = (DataSource) servletContext.getAttribute("my-pool");
-    UserService userService = UserServiceFactory.getUserService();
-    Boolean isUserLoggedIn = userService.isUserLoggedIn();
-    if (!isUserLoggedIn) {
-      response.sendRedirect("/login");
-      return;
+   public Boolean isPostRequestAuthorized(UserService userService, DataSource pool, HttpServletResponse response) 
+   throws IOException{
+       Boolean isUserLoggedIn = userService.isUserLoggedIn();
+        if (!isUserLoggedIn) {
+            response.sendRedirect("/login");
+            return false;
+        }
+        String email = userService.getCurrentUser().getEmail();
+        String logoutUrl = userService.createLogoutURL(URL_TO_REDIRECT_AFTER_USER_LOGS_OUT);
+        if (!email.endsWith(".edu")) {
+            response.sendRedirect("/badLogin.html?error=requires-student-email&logoutUrl=" + logoutUrl);
+            return false;
+        }
+        return true;
     }
-    String email = userService.getCurrentUser().getEmail();
-    String logoutUrl = userService.createLogoutURL(
-      URL_TO_REDIRECT_AFTER_USER_LOGS_OUT
-    );
-    if (!email.endsWith(".edu")) {
-      response.sendRedirect("/badLogin.html?error=requires-student-email&logoutUrl=" + logoutUrl);
-      return;
-    }
-    HashMap<String, String> resultParameters = new Gson().fromJson(request.getReader(), HashMap.class);
-    Boolean isUniversityIdValid;
-    try {
-      isUniversityIdValid = checkUniversityIdExists(pool, userService, response, resultParameters);
-    } catch (SQLException ex) {
-      throw new RuntimeException("There is an error with your sql statement ... ", ex);
-    }
-    if (isUniversityIdValid) {
-      try {
-        saveUserDetails(pool, userService, resultParameters);
-      } catch (SQLException ex) {
-        throw new RuntimeException("There is an error with your sql statement ... ", ex);
-      }
-    }
-  }
 }
