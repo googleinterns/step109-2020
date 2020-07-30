@@ -34,7 +34,6 @@ function configureSearchResponseToHTML(studySets) {
   return configuredStudySetInfoCards;
 }
 
-
 function formatInfoCardInHTML(studySet) {
   return `<a href="/viewStudySet.html?id=${studySet.id}" class="result-card">
       <div class="row result-card"> 
@@ -76,7 +75,9 @@ function configureStudySetCardDirectoryHTML(cards) {
   for (var card of cards) {
     configuredCardList += `
     <li class="truncate">
-      <a onclick="displayCard('${ card.front}', '${card.back}')" class="btn-flat">
+      <a onclick="displayCard('${card.front}', '${
+      card.back
+    }')" class="btn-flat">
         ${card.front.toUpperCase()}
       </a>
     </li>`;
@@ -137,8 +138,7 @@ function showAllButton() {
   var allCardsContainer = document.getElementById("all-cards-container");
   if (allCardsContainer.style.display == "none") {
     allCardsContainer.style.display = "block";
-  } 
-  else {
+  } else {
     allCardsContainer.style.display = "none";
   }
 }
@@ -192,9 +192,6 @@ function addStudySet() {
     cards.push(contacts);
   }
 
-  var userId = document.getElementById("user-id").value;
-  userId = userId.trim();
-
   var title = document.getElementById("title").value;
   title = title.trim();
 
@@ -218,7 +215,6 @@ function addStudySet() {
 
   if (
     !isStudySetInfoFilled(
-      userId,
       title,
       subject,
       description,
@@ -238,7 +234,6 @@ function addStudySet() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      user_id: userId,
       title: title,
       subject: subject,
       description: description,
@@ -253,7 +248,6 @@ function addStudySet() {
 }
 
 function isStudySetInfoFilled(
-  userId,
   title,
   subject,
   description,
@@ -263,7 +257,6 @@ function isStudySetInfoFilled(
   courseName
 ) {
   if (
-    userId == "" ||
     title == "" ||
     subject == "" ||
     description == "" ||
@@ -275,4 +268,11 @@ function isStudySetInfoFilled(
     return false;
   }
   return true;
+}
+
+async function checkLogIn() {
+  const logResponse = await fetch("/loggedIn");
+  if (logResponse.status == 401) {
+    window.location.replace("/index.html");
+  }
 }
