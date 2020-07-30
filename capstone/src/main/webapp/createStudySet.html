@@ -21,6 +21,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
+    <div class="root-layout">
     <nav class="nav-wrapper">
       <a href="#" class="brand-logo">Studentia</a>
       <a href="#" class="sidenav-trigger" data-target="slide_out"
@@ -32,7 +33,7 @@
       </ul>
     </nav>
 
-    <div class="row">
+    <div class="row study-set-creation">
       <div class="col s4 left-align teal lighten-4 z-depth-3 create-box">
         <p class="flow-text white-text">First Step to Create Study Set</p>
 
@@ -86,7 +87,7 @@
 
       <div class="col s1 left-align"></div>
 
-      <div class="col s7 center-align cyan darken-3">
+      <div class="col s7 center-align cyan darken-3 card-creation">
         <p class="flow-text white-text">Create your cards HERE</p>
         <div class="row">
           <form action="/study_set" id="card_form" method="POST">
@@ -114,9 +115,9 @@
     </div>
 
     <footer class="page-footer">
-      <div class"container"> © 2020 Studentia inc
+       © 2020 Studentia inc
     </footer>
-
+    </div>
     <!--JavaScript at end of body for optimized loading-->
     <script src="script.js"></script>
     <script
@@ -126,3 +127,4 @@
     <script type="text/javascript" src = "https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script> 
   </body>
 </html>
+

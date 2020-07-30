@@ -1,96 +1,142 @@
 <!DOCTYPE html>
 <html>
-
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Studentia-Homepage</title>
-    <link rel="stylesheet" href="style.css">
-     <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="style.css" />
+    <!-- Compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
     <!--Import Google Icon Font-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
     <!--Let browser know website is optimized for mobile-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
-  
-  <body>
 
-    <nav class="nav-wrapper">
+  <body>
+    <div class="root-layout">
+      <nav class="nav-wrapper">
         <a href="#" class="brand-logo">Studentia</a>
-        <a href="#" class="sidenav-trigger" data-target="slide_out" ><i class="material-icons">menu</i></a>
+        <a href="#" class="sidenav-trigger" data-target="slide_out"
+          ><i class="material-icons">menu</i></a
+        >
         <ul id="nav-mobile" class="right hide-on-med-and-down">
           <li><a href="findStudySet.html">Search</a></li>
           <li><a href="index.html">Home</a></li>
         </ul>
-    </nav>
+      </nav>
 
-    <ul class="sidenav" id="slide_out">
-          <li><a href="findStudySet.html">Search</a></li>
-          <li><a href="index.html">Home</a></li>
-    </ul>
+      <ul class="sidenav" id="slide_out">
+        <li><a href="findStudySet.html">Search</a></li>
+        <li><a href="index.html">Home</a></li>
+      </ul>
 
-    <section class="introduction">      
-      <div class="row"> 
-        <div class="col l4 m4 s12 push-l1">
-          <section class="left-intro">
-            <h1 class="white-text text-darken-4">Studentia</h1>
-            <sub class="flow-text"> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pharetra feugiat vehicula. Morbi vitae varius felis.
-                Ut quis interdum dui. Sed pulvinar eros non dictum molestie. Mauris ex arcu, dictum at justo ut, gravida maximus nibh.
-                Proin id mollis magna
-            </sub>
-          </section>
-        </div> 
-      <div class="col l8 m8 s12 push-l1">
-        <div class="container">
-          <h3>This will be a slideshow walkthrough</h3>
+      <section class="introduction" >
+        <div class="row" >
+          <div class="col l4 m4 s12 push-l1">
+            <section class="left-intro">
+              <h1 class="white-text text-darken-4">Studentia</h1>
+              <sub class="flow-text">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
+                pharetra feugiat vehicula. Morbi vitae varius felis. Ut quis
+                interdum dui. Sed pulvinar eros non dictum molestie. Mauris ex
+                arcu, dictum at justo ut, gravida maximus nibh. Proin id mollis
+                magna
+              </sub>
+            </section>
+          </div>
+          <div class="col l8 m8 s12 push-l1">
+            <div class="container">
+              <img src="Photos/s_logo.png" class="intro-img">
+            </div>
+          </div>
         </div>
-      </div>
-    </section> 
+      </section>
 
-    <section class="tab-description">
-      <div class="row">
-        <div class="col s12 m12 l12">
+      <section class="tab-description">
+        <div class="row description-row">
           <ul class="tabs">
-            <li class="tab col s4"><a href="#terms_of_usage">Terms of Usage</a></li>
-            <li class="tab col s4"><a href="#about" >About</a></li>
-            <li class="tab col s4"><a href="#get_started">Get Started</a></li>
+            <li class="tab col s4">
+              <a href="#terms_of_usage" class="">Terms of Usage</a>
+            </li>
+            <li class="tab col s4">
+              <a href="#about" class="active">About</a>
+            </li>
+            <li class="tab col s4">
+              <a href="#get_started" class="">Get Started</a>
+            </li>
+            <li class="indicator"></li>
           </ul>
-          <div class="col s12 tb home" id="terms_of_usage">
-            <h3 class="white-text text-darken-4">Terms Of Usage</h3>
-            <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pharetra feugiat vehicula. Morbi vitae varius felis.
-                Ut quis interdum dui. Sed pulvinar eros non dictum molestie. Mauris ex arcu, dictum at justo ut, gravida maximus nibh.
-                Proin id mollis magna. Donec ultricies finibus ante, at vestibulum elit volutpat vel. Fusce felis arcu, malesuada finibus 
-                convallis a, vulputate ac tellus. Quisque diam nulla, scelerisque eu mauris ut, vehicula ornare diam.
-            </p>
+          <div class="col s12 tb home"  id="terms_of_usage">
+            <div class="tab-container">
+              <h3 class="white-text text-darken-4">Terms Of Usage</h3>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
+                pharetra feugiat vehicula. Morbi vitae varius felis. Ut quis
+                interdum dui. Sed pulvinar eros non dictum molestie. Mauris ex
+                arcu, dictum at justo ut, gravida maximus nibh. Proin id mollis
+                magna. Donec ultricies finibus ante, at vestibulum elit volutpat
+                vel. Fusce felis arcu, malesuada finibus convallis a, vulputate
+                ac tellus. Quisque diam nulla, scelerisque eu mauris ut,
+                vehicula ornare diam.
+              </p>
+            </div>
           </div>
-           <div class="col s12 tb home" id="about">
-            <h3 class="white-text text-darken-4">About</h3>
-            <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pharetra feugiat vehicula. Morbi vitae varius felis.
-                Ut quis interdum dui. Sed pulvinar eros non dictum molestie. Mauris ex arcu, dictum at justo ut, gravida maximus nibh.
-                Proin id mollis magna. Donec ultricies finibus ante, at vestibulum elit volutpat vel. Fusce felis arcu, malesuada finibus 
-                convallis a, vulputate ac tellus. Quisque diam nulla, scelerisque eu mauris ut, vehicula ornare diam.
-            </p>
+          <div class="col s12 tb home active" id="about">
+            <div class="tab-container">
+              <h3 class="white-text text-darken-4">About</h3>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
+                pharetra feugiat vehicula. Morbi vitae varius felis. Ut quis
+                interdum dui. Sed pulvinar eros non dictum molestie. Mauris ex
+                arcu, dictum at justo ut, gravida maximus nibh. Proin id mollis
+                magna. Donec ultricies finibus ante, at vestibulum elit volutpat
+                vel. Fusce felis arcu, malesuada finibus convallis a, vulputate
+                ac tellus. Quisque diam nulla, scelerisque eu mauris ut,
+                vehicula ornare diam.
+              </p>
+            </div>
           </div>
-           <div class="col s12 tb home" id="get_started">
-            <h3 class=" white-text text-darken-4">Get Started</h3>
-            <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pharetra feugiat vehicula. Morbi vitae varius felis.
-                Ut quis interdum dui. Sed pulvinar eros non dictum molestie. Mauris ex arcu, dictum at justo ut, gravida maximus nibh.
-                Proin id mollis magna. Donec ultricies finibus ante, at vestibulum elit volutpat vel. Fusce felis arcu, malesuada finibus 
-                convallis a, vulputate ac tellus. Quisque diam nulla, scelerisque eu mauris ut, vehicula ornare diam.</p>
+          <div class="col s12 tb home" id="get_started">
+            <div class="tab-container">
+              <h3 class="white-text text-darken-4">Get Started</h3>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
+                pharetra feugiat vehicula. Morbi vitae varius felis. Ut quis
+                interdum dui. Sed pulvinar eros non dictum molestie. Mauris ex
+                arcu, dictum at justo ut, gravida maximus nibh. Proin id mollis
+                magna. Donec ultricies finibus ante, at vestibulum elit volutpat
+                vel. Fusce felis arcu, malesuada finibus convallis a, vulputate
+                ac tellus. Quisque diam nulla, scelerisque eu mauris ut,
+                vehicula ornare diam.
+              </p>
+            </div>
           </div>
-        </div>   
-      </div>   
-    </section>  
-
-    <footer class="page-footer">
-       <div>
-           © 2020 Studentia inc
-       </div>
-    </footer>
+        </div>
+      </section>
+      <footer class="page-footer">
+        <div>
+          © 2020 Studentia inc
+        </div>
+      </footer>
+    </div>
 
     <!--JavaScript at end of body for optimized loading-->
-    <script type = "text/javascript" src = "https://code.jquery.com/jquery-2.1.1.min.js"></script>         
-    <script type="text/javascript" src = "https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script> 
-     <script src="script.js"></script>    
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-2.1.1.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"
+    ></script>
+    <script src="script.js"></script>
+    <div class="sidenav-overlay"></div>
+    <div class="drag-target"></div>
   </body>
 </html>

@@ -19,68 +19,80 @@
   </head>
 
   <body onload="loadStudySetToPage()">
-    <nav class="nav-wrapper">
-      <a href="#" class="brand-logo">Studentia</a>
-      <a href="#" class="sidenav-trigger" data-target="slide_out"
-        ><i class="material-icons">menu</i></a
-      >
-      <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <div class="root-layout">
+      <nav class="nav-wrapper">
+        <a href="#" class="brand-logo">Studentia</a>
+        <a href="#" class="sidenav-trigger" data-target="slide_out"
+          ><i class="material-icons">menu</i></a
+        >
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a href="findStudySet.html">Search</a></li>
+          <li><a href="index.html">Home</a></li>
+        </ul>
+      </nav>
+
+      <ul class="sidenav" id="slide_out">
         <li><a href="findStudySet.html">Search</a></li>
         <li><a href="index.html">Home</a></li>
       </ul>
-    </nav>
-
-    <ul class="sidenav" id="slide_out">
-      <li><a href="findStudySet.html">Search</a></li>
-      <li><a href="index.html">Home</a></li>
-    </ul>
-
-    <div class="top-wrapper">
-      <div class="row">
-        <div class="item col s12 m2" id="study-set-directory-container"></div>
-        <div class="item col s12 m5 offset-m1" id="card-container">
-          <div class="card activator large">
-            <div class="card-content activator">
-              <span class="card-title activator">
-                How To Interect With a Card
-              </span>
-              <sub>click the title of the card to see the other side</sub>
-            </div>
-            <div class="card-reveal">
-              <span class="card-title">
+    <section class="view-content">
+      <div class="top-wrapper">
+        <div class="row">
+          <div class="item col s12 m2" id="study-set-directory-container"></div>
+          <div class="item col s12 m5 offset-m1" id="card-container">
+            <div class="card activator large">
+              <div class="card-content activator">
+                <span class="card-title activator">
+                  How To Interect With a Card
+                </span>
+                <sub>click the title of the card to see the other side</sub>
+              </div>
+              <div class="card-reveal">
+                <span class="card-title">
                   How To Interect With a Card
                   <i class="material-icons right">close</i>
-              </span>
-              <p>
-                Congratulations you got to the back of the card. To go back to
-                the front press the x or the title again. To see different cards use the card directory on the left. Have fun Studying!
-                <i class="material-icons">sentiment_very_satisfied</i>
-              </p>
+                </span>
+                <p>
+                  Congratulations you got to the back of the card. To go back to
+                  the front press the x or the title again. To see different
+                  cards use the card directory on the left. Have fun Studying!
+                  <i class="material-icons">sentiment_very_satisfied</i>
+                </p>
+              </div>
             </div>
           </div>
+          <div
+            class="item col s12 m3 offset-m1"
+            id="study-set-details-container"
+          ></div>
         </div>
-        <div class="item col s12 m3 offset-m1" id="study-set-details-container"></div>
       </div>
+
+      <div class="row">
+        <div class="btn-container">
+          <a class="btn" onclick="showAllButton()">Show All Cards</a>
+        </div>
     </div>
-
-    <div class="row">
-      <div class="btn-container">
-        <a class="btn" onclick="showAllButton()">Show All Cards</a>
-      </div>
-      <div class="col all-cards">
-          <div id="all-cards-container"></div>
-      </div>
+    
+    <div class="row" id="all-cards-container"></div>
+        
+      
+    </section>
+      <footer class="page-footer">
+        <div>
+          © 2020 Studentia inc
+        </div>
+      </footer>
     </div>
-
-    <footer class="page-footer">
-      <div>
-        © 2020 Studentia inc
-      </div>
-    </footer>
-
-    <!--JavaScript at end of body for optimized loading-->
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
-    <script src="script.js"></script>
+      <!--JavaScript at end of body for optimized loading-->
+      <script
+        type="text/javascript"
+        src="https://code.jquery.com/jquery-2.1.1.min.js"
+      ></script>
+      <script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"
+      ></script>
+      <script src="script.js"></script>
   </body>
 </html>
