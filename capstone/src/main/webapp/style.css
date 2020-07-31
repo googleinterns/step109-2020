@@ -1,6 +1,16 @@
 /* General Pages */
+html,
 body {
+  height: 100%;
+  margin: 0;
   background-image: url("Photos/webb.png");
+}
+
+div.root-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  overflow-x: hidden;
 }
 
 main {
@@ -16,14 +26,20 @@ footer.page-footer {
   color: #ffffff;
   line-height: 50px;
   padding: 0 20px;
+  bottom: 0;
 }
-
 /* Hompe Page */
 section.left-intro {
   line-height: 40px;
 }
 
+img.intro-img {
+  height: 400px;
+  width: 400px;
+}
+
 section.introduction {
+  flex-grow: 1;
   background-color: #b8e2e4;
   display: flex;
   flex-direction: row;
@@ -31,14 +47,45 @@ section.introduction {
   margin-bottom: 50px;
 }
 
-div.col.s12.tb.home {
+section.tab-description {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-self: stretch;
+  width: 100%;
+}
+
+div.description-row {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin: 0;
+}
+
+div.tab-container {
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+div.col.tb.home {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
   margin-bottom: 30px;
-  line-height: 2;
+}
+
+div.col.tb.home.active {
+  flex-direction: column;
+  display: flex;
 }
 
 div.col.s12.tb {
   color: white;
   background-color: #5ab8bf;
+  font-size: 20px;
+  font-weight: 300;
 }
 
 ul.tabs .indicator {
@@ -75,6 +122,11 @@ sub.flow-text {
 }
 
 /* Search page */
+div.wrap {
+  width: 100%;
+  justify-content: top;
+}
+
 div.search {
   width: 100%;
   padding-top: 10px;
@@ -121,11 +173,6 @@ button.search-button:hover {
   color: #59b9bf;
 }
 
-div.wrap {
-  width: 100%;
-  justify-content: top;
-}
-
 /* Search results */
 div.top-line {
   display: flex;
@@ -148,11 +195,11 @@ span strong {
 }
 
 div.search-result {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 3;
   margin-bottom: 20px;
   margin-top: 20px;
-  padding: 4px;
-  width: 100%x;
-  height: 700px;
   overflow-x: hidden;
   overflow-y: auto;
   text-align: justify;
@@ -169,6 +216,13 @@ div.no-results h3 {
 }
 
 /* View Page */
+section.view-content {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
 div.top-wrapper {
   background-color: #b8e2e4d4;
   width: cover;
@@ -197,6 +251,7 @@ div.top-wrapper {
   background-color: #c4e6e8;
   color: #59b9bf;
 }
+
 #study-set-directory-container a.btn-flat {
   color: #fcfefe;
 }
@@ -211,6 +266,7 @@ div.card div.card-content span.card-title {
   display: block;
   margin-top: 200px;
   font-size: 45px;
+  line-height: 1;
 }
 
 div.card {
@@ -245,6 +301,7 @@ div.card div.card-reveal {
 }
 
 div.btn-container {
+  margin-top: 20px;
   text-align: center;
   margin-bottom: 20px;
 }
@@ -261,22 +318,47 @@ div.btn-container a.btn:hover {
   color: #58bbbf;
 }
 
-#all-cards-container {
-  background-color: #58bbbf;
-  display: none;
+div#all-cards-container {
+  background-color: #c3e6e8bd;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
-div.all-cards {
-  background-color: #a8dcdeb3;
-  width: 100%;
-  text-align: center;
+#all-cards-container ul {
+  background-color: #58babf;
+  width: 90%;
 }
 
 #all-cards-container li.card {
   color: #373532;
+  width: 90%;
   background-color: #efe2bb;
   margin-top: 20px;
+  margin-left: 25px;
+  margin-right: 25px;
   line-height: 45px;
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
     0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Create Study Set */
+div.row.study-set-creation {
+  min-height: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-content: flex-start;
+}
+
+div.create-box {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+div.card-creation {
+  margin-top: 20px;
+  height: 900px;
+  overflow-y: scroll;
 }
