@@ -153,8 +153,6 @@ function configureAllCardsHTML(cards) {
 
 function showAllButton() {
   var allCardsContainer = document.getElementById("all-cards-container");
-  console.log(allCardsContainer.classList);
-  console.log(allCardsContainer.classList.contains("hide"));
   if (allCardsContainer.classList.contains("hide")) {
     allCardsContainer.classList.remove("hide");
   } else {
