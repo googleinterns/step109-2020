@@ -245,9 +245,7 @@ async function addStudySet() {
     }),
   });
   const studyID = await response.json();
-  
   window.location.replace("/viewStudySet.html?id=" + studyID)
-
 }
 
 function isStudySetInfoFilled(
