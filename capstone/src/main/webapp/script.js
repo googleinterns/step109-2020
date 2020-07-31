@@ -34,20 +34,14 @@ function configureSearchResponseToHTML(studySets) {
   return configuredStudySetInfoCards;
 }
 
-function encodeHTML(str) {
-  if (str === null || str === "") return false;
-  else str = str.toString();
-  return str.replace(/<[^>]*>/g, "");
-}
-
 function formatInfoCardInHTML(studySet) {
-  var id = encodeHTML(studySet.id);
-  var title = encodeHTML(studySet.title);
-  var subject = encodeHTML(studySet.subject);
-  var length = encodeHTML(studySet.study_set_length);
-  var description = encodeHTML(studySet.description);
-  var author = encodeHTML(studySet.user_author);
-  var university = encodeHTML(studySet.university);
+  var id = studySet.id;
+  var title = studySet.title;
+  var subject = studySet.subject;
+  var length = studySet.study_set_length;
+  var description = studySet.description;
+  var author = studySet.user_author;
+  var university = studySet.university;
   return `
     <a href="/viewStudySet.html?id=${id}">
       <div class="row"> 
@@ -59,7 +53,9 @@ function formatInfoCardInHTML(studySet) {
             </div>
             <p>${length} cards in set</p>
             <p><strong>DESCRIPTION</strong>, ${description}</p>
-            <span> By  ${studySet.user_author} from ${studySet.university}</span>
+            <span> By  ${studySet.user_author} from ${
+    studySet.university
+  }</span>
           </div>
         </div>
       </div>
@@ -89,8 +85,8 @@ async function loadStudySetToPage() {
 function configureStudySetCardDirectoryHTML(cards) {
   var configuredCardList = "";
   for (var card of cards) {
-    var front = encodeHTML(card.front);
-    var back = encodeHTML(card.back);
+    var front = card.front;
+    var back = card.back;
     configuredCardList += `
     <li class="truncate">
       <a onclick="displayCard('${front}', '${back}')" class="btn-flat">
@@ -127,11 +123,11 @@ function configureStudySetDetailsHTML(studySet) {
 }
 
 function formatStudySetDetailsInHTML(studySet) {
-  var title = encodeHTML(studySet.title);
-  var subject = encodeHTML(studySet.subject);
-  var description = encodeHTML(studySet.description);
-  var author = encodeHTML(studySet.user_author);
-  var university = encodeHTML(studySet.university);
+  var title = studySet.title;
+  var subject = studySet.subject;
+  var description = studySet.description;
+  var author = studySet.user_author;
+  var university = studySet.university;
   return `
     <h3>${title.toUpperCase()}</h3>
     <span>
@@ -144,8 +140,8 @@ function formatStudySetDetailsInHTML(studySet) {
 function configureAllCardsHTML(cards) {
   var configuredStudySetCards = "";
   for (var card of cards) {
-    var front = encodeHTML(card.front);
-    var back = encodeHTML(card.back);
+    var front = card.front;
+    var back = card.back;
     configuredStudySetCards += ` 
     <li class="card full-card">
         <div class="front">${front}</div>
@@ -157,10 +153,12 @@ function configureAllCardsHTML(cards) {
 
 function showAllButton() {
   var allCardsContainer = document.getElementById("all-cards-container");
-  if (allCardsContainer.style.display == "none") {
-    allCardsContainer.style.display = "flex";
+  console.log(allCardsContainer.classList);
+  console.log(allCardsContainer.classList.contains("hide"));
+  if (allCardsContainer.classList.contains("hide")) {
+    allCardsContainer.classList.remove("hide");
   } else {
-    allCardsContainer.style.display = "none";
+    allCardsContainer.classList.add("hide");
   }
 }
 
