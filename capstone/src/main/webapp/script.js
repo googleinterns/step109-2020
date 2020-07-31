@@ -183,7 +183,7 @@ function addCard() {
   form.appendChild(newBackCard);
 }
 
-function addStudySet() {
+async function addStudySet() {
   var elements = document.getElementsByClassName("input-card");
   var cards = [];
 
@@ -230,7 +230,7 @@ function addStudySet() {
     return;
   }
 
-  fetch("/study_set", {
+   const response = await fetch("/study_set", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -244,7 +244,10 @@ function addStudySet() {
       cards: cards,
     }),
   });
-  window.location.reload();
+  const studyID = await response.json();
+  
+  window.location.replace("/viewStudySet.html?id=" + studyID)
+
 }
 
 function isStudySetInfoFilled(

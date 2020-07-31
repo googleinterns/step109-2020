@@ -40,7 +40,7 @@ public class UniversityTable {
     }
 
     String path = System.getProperty("user.dir");
-    path += "/../../src/main/java/com/google/sps/csv/Mock_University_Table.csv";
+    path += "/../../src/main/java/com/google/sps/csv/University_Table.csv";
 
     if (!ifFileExist(path)) {
       System.err.println("File doesn't exist in this attempted path: " + path);
