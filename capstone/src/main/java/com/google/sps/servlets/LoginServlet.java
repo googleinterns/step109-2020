@@ -14,11 +14,9 @@
 
 package com.google.sps.servlets;
 
-//import statements for the Users API
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
-//import statements for SQL Interaction
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.IOException;
@@ -58,14 +56,11 @@ public class LoginServlet extends HttpServlet {
     HashMap<String, String> userDetails = new HashMap<>();
     if (isUserLoggedIn) {
       response.sendRedirect("/validate_email");
-    } else {
-      response.setStatus(401);
-      userDetails.put(
-        "loginUrl",
-        userService.createLoginURL(URL_TO_REDIRECT_AFTER_USER_LOGS_IN)
-      );
-      String userResult = new Gson().toJson(userDetails);
-      response.getWriter().println(userResult);
+      return;
     }
+    response.setStatus(401);
+    userDetails.put("loginUrl", userService.createLoginURL(URL_TO_REDIRECT_AFTER_USER_LOGS_IN));
+    String userResult = new Gson().toJson(userDetails);
+    response.getWriter().println(userResult);
   }
 }

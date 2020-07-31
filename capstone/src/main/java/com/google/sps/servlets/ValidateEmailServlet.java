@@ -14,11 +14,10 @@
 
 package com.google.sps.servlets;
 
-//import statements for the Users API
+
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
-//import statements for SQL Interaction
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.IOException;
@@ -67,6 +66,7 @@ public class ValidateEmailServlet extends HttpServlet {
     UserService userService = UserServiceFactory.getUserService();
     if (!userService.isUserLoggedIn()) {
       response.sendRedirect("/");
+      return;
     }
     try {
       checkForStudentEmail(
@@ -154,6 +154,7 @@ public class ValidateEmailServlet extends HttpServlet {
       }
       response.setStatus(200);
       response.sendRedirect("/dashboard.html");
+      return ;
     }
   }
 }
