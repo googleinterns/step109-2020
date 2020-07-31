@@ -247,6 +247,7 @@ public class StudySetServlet extends HttpServlet {
         HttpServletResponse.SC_UNAUTHORIZED,
         "User must be logged in"
       );
+      return;
     }
 
     String redirectID = createRow(
