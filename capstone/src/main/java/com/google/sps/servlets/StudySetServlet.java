@@ -243,7 +243,9 @@ public class StudySetServlet extends HttpServlet {
     try {
       ownerID = getOwnerId(pool);
     } catch (NotLoggedInException ex) {
-      throw new RuntimeException("User must be logged in", ex);
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+        "User must be logged in"
+      );
     }
 
     String redirectID = createRow(
