@@ -202,7 +202,7 @@ function addCard() {
   form.appendChild(newBackCard);
 }
 
-function addStudySet() {
+async function addStudySet() {
   var elements = document.getElementsByClassName("input-card");
   var cards = [];
 
@@ -210,9 +210,6 @@ function addStudySet() {
     var contacts = { front: elements[i].value, back: elements[i + 1].value };
     cards.push(contacts);
   }
-
-  var userId = document.getElementById("user-id").value;
-  userId = userId.trim();
 
   var title = document.getElementById("title").value;
   title = title.trim();
@@ -237,7 +234,6 @@ function addStudySet() {
 
   if (
     !isStudySetInfoFilled(
-      userId,
       title,
       subject,
       description,
@@ -253,11 +249,10 @@ function addStudySet() {
     return;
   }
 
-  fetch("/study_set", {
+   const response = await fetch("/study_set", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      user_id: userId,
       title: title,
       subject: subject,
       description: description,
@@ -268,11 +263,11 @@ function addStudySet() {
       cards: cards,
     }),
   });
-  window.location.reload();
+  const studyID = await response.json();
+  window.location.replace("/viewStudySet.html?id=" + studyID)
 }
 
 function isStudySetInfoFilled(
-  userId,
   title,
   subject,
   description,
@@ -282,7 +277,6 @@ function isStudySetInfoFilled(
   courseName
 ) {
   if (
-    userId == "" ||
     title == "" ||
     subject == "" ||
     description == "" ||
@@ -294,4 +288,11 @@ function isStudySetInfoFilled(
     return false;
   }
   return true;
+}
+
+async function checkLogIn() {
+  const logResponse = await fetch("/loggedIn");
+  if (logResponse.status == 401) {
+    window.location.replace("/index.html");
+  }
 }
