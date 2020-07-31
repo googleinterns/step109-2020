@@ -243,7 +243,8 @@ public class StudySetServlet extends HttpServlet {
     try {
       ownerID = getOwnerId(pool);
     } catch (NotLoggedInException ex) {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+      response.sendError(
+        HttpServletResponse.SC_UNAUTHORIZED,
         "User must be logged in"
       );
     }
