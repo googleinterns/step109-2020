@@ -220,7 +220,7 @@ async function addStudySet() {
   var description = document.getElementById("description").value;
   description = description.trim();
 
-  var universityId = document.getElementById("university-id").value;
+  var universityId = checkUniversityValue();
   universityId = universityId.trim();
 
   var professor = document.getElementById("professor").value;
@@ -295,4 +295,8 @@ async function checkLogIn() {
   if (logResponse.status == 401) {
     window.location.replace("/index.html");
   }
+}
+
+function realName(){
+    console.log(checkUniversityValue());
 }
