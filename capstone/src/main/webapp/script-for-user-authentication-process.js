@@ -1,5 +1,3 @@
-//Neglect this file now
-
 // Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +34,6 @@ function setUpAutoComplete(universityDataFromRequest){
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    //Init auto complete.
     const universityList = (function(){
         const acElms = document.querySelectorAll('.autocomplete');
         const instances = M.Autocomplete.init(acElms, {
@@ -120,7 +117,7 @@ async function registerUserDetails() {
     var userName = checkUserNameInputValue();
     data = {"full_name": fullName, "user_name": userName, "university": universityId};
     const response = await fetch("/users", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)});
-    window.location.pathname = "/dashboard.html";
+    window.location.replace("/dashboard.html");
  }
 
 async function fillUserDashboardPage() {
@@ -156,8 +153,8 @@ function getNewUserEmail(){
 }
 
 function addNewStudySet(responseBody){
-    var linkElement = document.createElement("a");
-    linkElement.href = "/viewStudySet.html?id="+responseBody.id;
+    var cardLinkElement = document.createElement("a");
+    cardLinkElement.href = "/viewStudySet.html?id="+responseBody.id;
     var colDivElement =document.createElement("div");
     colDivElement.className = "col s12 m4";
     var cardDivElement = document.createElement("div");
@@ -179,8 +176,8 @@ function addNewStudySet(responseBody){
     cardDivElement.append(cardContentDivElement);
     cardDivElement.append(cardActionDivElement);
     colDivElement.append(cardDivElement);
-    linkElement.append(colDivElement);
-    return linkElement;
+    cardLinkElement.append(colDivElement);
+    return cardLinkElement;
 }
 
 async function getRecentStudySet(userId){
@@ -190,10 +187,8 @@ async function getRecentStudySet(userId){
      document.getElementById("study-set-text").textContent = "You are yet to create a study set, click above to start now !";
      return ;
     }
-    
     var userStudySetElement = document.getElementById("recent-study-set");
     userStudySetElement.innerHTML = "";
-
     responseBody.forEach(function (studySet) {
     userStudySetElement.append(addNewStudySet(studySet));
   });
