@@ -18,7 +18,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
 
-  <body>
+  <body onload="redirectUserToRightPage()">
     <div class="root-layout">
       <nav class="nav-wrapper">
         <a href="#" class="brand-logo">Studentia</a>
@@ -27,7 +27,8 @@
         >
         <ul id="nav-mobile" class="right hide-on-med-and-down">
           <li><a href="findStudySet.html">Search</a></li>
-          <li><a href="index.html">Home</a></li>
+          <li><a href="/">Home</a></li>
+          <li><a href="" id="login">Log In</a></li>
         </ul>
       </nav>
 
@@ -136,5 +137,6 @@
       src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"
     ></script>
     <script src="script.js"></script>
+    <script src="script-for-user-authentication-process.js"></script>
   </body>
 </html>
