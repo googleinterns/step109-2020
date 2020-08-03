@@ -296,7 +296,3 @@ async function checkLogIn() {
     window.location.replace("/index.html");
   }
 }
-
-function realName(){
-    console.log(checkUniversityValue());
-}
