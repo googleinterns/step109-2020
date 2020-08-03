@@ -13,66 +13,65 @@
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   </head>
-  <body onload="getCurrentUserInfo(); getRecentStudySet();">
-   <div class="root-layout">
-     <nav class="nav-wrapper">
-        <a href="" class="brand-logo">Studentia</a>
-        <a href="#" class="sidenav-trigger" data-target="slide_out" ><i class="material-icons">menu</i></a>
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><a href="findStudySet.html">Search</a></li>
-          <li><a href="/">Home</a></li>
+  <body onload="fillUserDashboardPage(); getRecentStudySet();">
+    <div class="root-layout">
+        <nav class="nav-wrapper">
+            <a href="" class="brand-logo">Studentia</a>
+            <a href="#" class="sidenav-trigger" data-target="slide-out" ><i class="material-icons">menu</i></a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="findStudySet.html">Search</a></li>
+            <li><a href="/">Home</a></li>
+            </ul>
+        </nav>
+        <ul class="sidenav" id="slide-out">
+            <li><a href="findStudySet.html">Search</a></li>
+            <li><a href="/">Home</a></li>
         </ul>
-    </nav>
-
-    <ul class="sidenav" id="slide_out">
-          <li><a href="findStudySet.html">Search</a></li>
-          <li><a href="/">Home</a></li>
-    </ul>
-    <div class="page-content">
-        <div class="container">
-            <blockquote class="flow-text">Welcome to your personal dashboard, start learning !! </blockquote>
-            <div class="row">
-                <div class="col s12 m6 l6">
-                    <div class="card darken-1">
-                        <div class="card-content black-text">
-                            <h4>Your Profile Details</h4>
-                            <hr>
-                            <p>Full Name: <span id="full-name"></span></p>
-                            <p>User Name: <span id="user-name"></span></p>
-                            <p>University: <span id="university"></span></p>
-                            <p>Email Address: <span id="email"></span></p>
+        <div class="page-content">
+            <div class="container">
+                <blockquote class="flow-text">Welcome to your personal dashboard, start learning !! </blockquote>
+                <div class="row">
+                    <div class="col s12 m6 l6">
+                        <div class="card darken-1">
+                            <div class="card-content black-text">
+                                <h4>Your Profile Details</h4>
+                                <hr>
+                                <p>Full Name: <span id="full-name"></span></p>
+                                <p>User Name: <span id="user-name"></span></p>
+                                <p>University: <span id="university"></span></p>
+                                <p>Email Address: <span id="email"></span></p>
+                            </div>
+                            <div class="card-action">
+                                <a href="" id="logout-url"  class="btn waves-effect waves-light">Log Out</a>
+                            </div>
                         </div>
-                        <div class="card-action">
-                            <a href="" id="logout-url"  class="btn waves-effect waves-light">Log Out</a>
+                    </div>
+                    <div class="col s12 m12 l6">
+                        <div class="card darken-1">
+                            <div class="card-content black-text">
+                                <p class="flow-text">
+                                    Start studying and helping others by creating your study set now ! <br>
+                                </p>
+                            </div>
+                            <div class="card-action">
+                                <a href="/createStudySet.html"  class="btn waves-effect waves-light">
+                                    <i class="material-icons right">add_circle</i> Create study set
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col s12 m12 l6">
-                    <div class="card darken-1">
-                        <div class="card-content black-text">
-                            <p class="flow-text">
-                                Start studying and helping others by creating your study set now ! <br>
-                            </p>
-                        </div>
-                        <div class="card-action">
-                            <a href="/createStudySet.html"  class="btn waves-effect waves-light">
-                                <i class="material-icons right">add_circle</i> Create study set
-                            </a>
-                        </div>
-                    </div>
+                <blockquote class="flow-text" id="study-set-text">Take a view at your most recently created study sets.</blockquote>
+                <div class="row" id="recent-study-set">
                 </div>
-            </div>
-            <blockquote class="flow-text" id="study-set-text">Take a view at your most recently created study sets.</blockquote>
-            <div class="row" id="recent-study-set">
             </div>
         </div>
+        <footer class="page-footer">
+            <div class"container">
+                © 2020 Studentia inc
+            </div>
+        </footer>
     </div>
-    <footer class="page-footer">
-       <div class"container">
-           © 2020 Studentia inc
-       </div>
-    </footer>
-   </div>
      <!--JavaScript at end of body for optimized loading-->
     <script type = "text/javascript" src = "https://code.jquery.com/jquery-2.1.1.min.js"></script>         
     <script type="text/javascript" src = "https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script> 
