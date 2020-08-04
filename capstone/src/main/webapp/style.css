@@ -119,7 +119,7 @@ li.tab.col.s4 a:hover {
 
 sub.flow-text {
   color: grey;
-  font-size: smaller;
+  font-size: inherit;
 }
 
 /* Search page */
